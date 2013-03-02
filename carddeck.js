@@ -46,22 +46,26 @@ window.card = (function () {
         });
     };
 
-    pt.disappear = function () {
-        var dom = this.div.dom;
+    pt.disappear = function (args) {
+        var div = this.div;
+
+        var delay = args.delay || 0;
 
         this.unbindListener();
 
-        this.div.css({
-            top: '200px',
-            left: '150px',
-            width: '0px',
-            height: '0px',
-            border: 'solid 0px'
+        window.elapsed(delay).then(function () {
+            div.css({
+                top: '200px',
+                left: '150px',
+                width: '0px',
+                height: '0px',
+                border: 'solid 0px'
+            });
         });
 
-        window.elapsed(1000).then(function () {
-            delete dom.wrapper;
-            dom.parentElement.removeChild(dom);
+        window.elapsed(1000 + args.delay).then(function () {
+            delete div.dom.wrapper;
+            div.dom.parentElement.removeChild(div.dom);
         });
     };
 
@@ -185,10 +189,8 @@ this.cardDeck = function (window) {
             var prevDeck = deck;
             deck = [];
 
-            window.elapsed(575).then(function () {
-                prevDeck.forEach(function (card) {
-                    card.disappear();
-                });
+            prevDeck.forEach(function (card) {
+                card.disappear({delay: 575});
             });
 
             window.elapsed(875).then(function () {
