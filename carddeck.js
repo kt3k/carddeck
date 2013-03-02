@@ -11,12 +11,13 @@ window.card = (function () {
     var card = function (args) {
         this.i = args.i;
         this.eventListener = args.eventListener;
+        this.duration = args.duration || 0;
 
         this.div = window.div({
             position: 'absolute',
             width: '75px',
             height: '95px',
-            webkitTransitionDuration: '300ms',
+            webkitTransitionDuration: this.duration + 'ms',
             webkitTransitionTimingFunction: 'ease-out',
             border: 'solid 1px white'
         });
@@ -54,7 +55,7 @@ window.card = (function () {
             div.setScale(0).setX(110).setY(150).commit();
         });
 
-        window.elapsed(1000 + args.delay).then(function () {
+        window.elapsed(this.duration + args.delay).then(function () {
             delete dom.wrapper;
             dom.parentElement.removeChild(dom);
         });
@@ -182,6 +183,7 @@ this.cardDeck = function (window) {
             var card = window.card({
                 i: n,
                 color: color,
+                duration: 300,
                 eventListener: function () {
                     pop();
                 }
