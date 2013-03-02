@@ -14,15 +14,16 @@ window.card = (function () {
 
         this.div = window.div({
             position: 'absolute',
-            left: '150px',
-            top: '380px',
-            width: '0px',
-            height: '0px',
+            width: '75px',
+            height: '95px',
             webkitTransitionDuration: '300ms',
             webkitTransitionTimingFunction: 'ease-out',
-            backgroundColor: args.color,
             border: 'solid 1px white'
         });
+
+        this.div.setHue(args.color.hue).setSat(args.color.sat).setLum(args.color.lum);
+
+        this.div.setScale(0).setX(110).setY(380).commit();
 
         this.div.dom.wrapper = this;
 
@@ -37,35 +38,25 @@ window.card = (function () {
         var self = this;
 
         window.elapsed(10).then(function () {
-            self.div.css({
-                width: '75px',
-                height: '95px',
-                top: '245px',
-                left: '' + (100 * self.i + 15) + 'px'
-            });
+            self.div.setScale(100).setX(100 * self.i + 15).setY(245).commit();
         });
     };
 
     pt.disappear = function (args) {
         var div = this.div;
+        var dom = div.dom;
 
         var delay = args.delay || 0;
 
         this.unbindListener();
 
         window.elapsed(delay).then(function () {
-            div.css({
-                top: '200px',
-                left: '150px',
-                width: '0px',
-                height: '0px',
-                border: 'solid 0px'
-            });
+            div.setScale(0).setX(110).setY(150).commit();
         });
 
         window.elapsed(1000 + args.delay).then(function () {
-            delete div.dom.wrapper;
-            div.dom.parentElement.removeChild(div.dom);
+            delete dom.wrapper;
+            dom.parentElement.removeChild(dom);
         });
     };
 
@@ -157,18 +148,40 @@ this.cardDeck = function (window) {
         var deck = [];
 
         var colorMap = {
-            S: 'hsl(60,80%,50%)',
-            N: 'hsl(120,40%,70%)',
-            O: 'hsl(180,80%,50%)',
-            W: 'hsl(220,80%,50%)',
-            NONE: 'gray'
+            S: {
+                hue: 60,
+                sat: 80,
+                lum: 50
+            },
+            N: {
+                hue: 120,
+                sat: 40,
+                lum: 50
+            },
+            O: {
+                hue: 180,
+                sat: 80,
+                lum: 50
+            },
+            W: {
+                hue: 220,
+                sat: 80,
+                lum: 50
+            },
+            NONE: {
+                hue: 0,
+                sat: 0,
+                lum: 50
+            }
         };
 
         var monoHook = function (n, cmd) {
 
+            var color = colorMap[cmd];
+
             var card = window.card({
                 i: n,
-                color: colorMap[cmd],
+                color: color,
                 eventListener: function () {
                     pop();
                 }
@@ -177,10 +190,11 @@ this.cardDeck = function (window) {
             deck.push(card);
             card.appear();
 
-            swipeTarget.css({backgroundColor: colorMap[cmd]});
+            swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
 
             window.elapsed(400).then(function () {
-                swipeTarget.css({backgroundColor: colorMap.NONE});
+                var color = colorMap.NONE;
+                swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
             });
         };
 
