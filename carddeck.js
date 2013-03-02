@@ -149,22 +149,22 @@ this.cardDeck = function (window) {
 
         var colorMap = {
             S: {
-                hue: 60,
+                hue: Math.floor(Math.random() * 360),
                 sat: 80,
                 lum: 50
             },
             N: {
-                hue: 120,
+                hue: Math.floor(Math.random() * 360),
                 sat: 40,
                 lum: 50
             },
             O: {
-                hue: 180,
+                hue: Math.floor(Math.random() * 360),
                 sat: 80,
                 lum: 50
             },
             W: {
-                hue: 220,
+                hue: Math.floor(Math.random() * 360),
                 sat: 80,
                 lum: 50
             },
