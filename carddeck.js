@@ -272,8 +272,13 @@ this.cardDeck = function (window) {
                 window.arrowkeys.clear();
                 window.swipe4.clear();
 
-                swipeTarget.css({webkitTransitionDuration: '500ms'}).addY(200);
-                swipeTarget.commit();
+                swipeTarget.css({webkitTransitionDuration: '500ms'}).addY(200).commit();
+
+                deck.forEach(function (card) {
+                    card.disappear2();
+                });
+
+                deck = [];
 
                 window.elapsed(400).then(function () {
                     swipeTarget.css({webkitTransitionDuration: '500ms', opacity: 0}).commit();
