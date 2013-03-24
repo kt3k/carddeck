@@ -88,13 +88,47 @@ window.card = (function () {
         return new card(args);
     };
 
-    pt.contructor = exports;
+    pt.constructor = exports;
 
     exports.prototype = pt;
 
     return exports;
 }());
 
+
+window.swipee = (function () {
+    'use strict';
+
+    var swipee = function (args) {
+        this.div = window.div().css({
+            position: 'absolute',
+            top: '0px',
+            left: '0px',
+            width: '250px',
+            height: '120px',
+            backgroundColor: 'gray',
+            border: 'solid 1px white',
+            opacity: '0',
+            webkitTransitionDuration: '500ms'
+        });
+
+        this.div.setY(580).setX(25).setSat(0).commit();
+
+        document.body.appendChild(this.div.dom);
+    };
+
+    var pt = swipee.prototype;
+
+    var exports = function (args) {
+        return new swipee(args);
+    };
+
+    pt.constructor = exports;
+
+    exports.prototype = pt;
+
+    return exports;
+}());
 
 
 this.cardDeck = function (window) {
@@ -107,8 +141,7 @@ this.cardDeck = function (window) {
     };
 
     var createSwipeTarget = function () {
-        window.div.sat = 0;
-        var div = window.div({
+        var div = window.div().css({
             position: 'absolute',
             top: '0px',
             left: '0px',
@@ -120,9 +153,7 @@ this.cardDeck = function (window) {
             webkitTransitionDuration: '500ms'
         });
 
-        div.setY(580);
-        div.setX(25);
-        div.commit();
+        div.setY(580).setX(25).setSat(0).commit();
 
         document.body.appendChild(div.dom);
 
@@ -142,7 +173,7 @@ this.cardDeck = function (window) {
         return div;
     };
 
-    var exports = function (signHooks) {
+    var exports = function (signHook) {
 
         var swipeTarget = null;
 
@@ -210,12 +241,8 @@ this.cardDeck = function (window) {
             });
 
             window.elapsed(875).then(function () {
-                proteinHook(syms);
+                signHook(syms.join(''));
             });
-        };
-
-        var proteinHook = function (acids) {
-            call(signHooks[acids.join('')]);
         };
 
         var pop = function () {
