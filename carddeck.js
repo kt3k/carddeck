@@ -281,16 +281,20 @@ this.cardDeck = function (window) {
 
                 progress: {
                     up: function () {
-                        swipeTarget.div.css({backgroundColor: colorMap.S});
+                        var color = colorMap.S;
+                        swipeTarget.div.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     down: function () {
-                        swipeTarget.div.css({backgroundColor: colorMap.N});
+                        var color = colorMap.N;
+                        swipeTarget.div.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     left: function () {
-                        swipeTarget.div.css({backgroundColor: colorMap.O});
+                        var color = colorMap.O;
+                        swipeTarget.div.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     right: function () {
-                        swipeTarget.div.css({backgroundColor: colorMap.W});
+                        var color = colorMap.W;
+                        swipeTarget.div.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     }
                 }
             };
