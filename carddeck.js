@@ -51,18 +51,22 @@ window.card = (function () {
 
     pt.disappear = function (args) {
         var div = this.div;
-        var dom = div.dom;
 
         var delay = args.delay || 0;
 
         this.unbindListener();
 
-        window.elapsed(delay).then(function () {
-            div.setScale(0).setX(110).setY(150).commit();
-        });
+        this.div
+        .transition()
+        .duration(this.duration)
+        .delay(delay)
+        .setScale(0)
+        .setX(110)
+        .setY(150)
+        .transitionCommit()
 
-        window.elapsed(this.duration + args.delay).then(function () {
-            dom.parentElement.removeChild(dom);
+        window.elapsed(this.duration + delay).then(function () {
+            div.remove();
         });
     };
 
@@ -71,9 +75,10 @@ window.card = (function () {
 
         this.unbindListener();
 
-        this.div.setScale(0);
-        this.div.addRot(Math.random() * 720 - 360);
-        this.div.commit();
+        this.div
+        .setScale(0)
+        .addRot(Math.random() * 720 - 360)
+        .commit();
 
         window.elapsed(1000).then(function () {
             dom.parentElement.removeChild(dom);
