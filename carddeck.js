@@ -218,12 +218,17 @@ this.cardDeck = function (window) {
             deck.push(card);
             card.appear();
 
-            swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
-
-            window.elapsed(400).then(function () {
-                var color = colorMap.NONE;
-                swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
-            });
+            swipeTarget.div
+            .setHue(color.hue)
+            .setSat(color.sat)
+            .setLum(color.lum)
+            .commit()
+            .transition()
+            .delay(400)
+            .setHue(colorMap.NONE.hue)
+            .setSat(colorMap.NONE.sat)
+            .setLum(colorMap.NONE.lum)
+            .transitionCommit();
         };
 
         var codonHook = function (syms) {
@@ -253,6 +258,7 @@ this.cardDeck = function (window) {
 
             var swipe = {
                 target: swipeTarget.div.dom,
+
                 end: {
                     up: function () {
                         machine.command('S');
@@ -270,16 +276,16 @@ this.cardDeck = function (window) {
 
                 progress: {
                     up: function () {
-                        swipeTarget.css({backgroundColor: colorMap.S});
+                        swipeTarget.div.css({backgroundColor: colorMap.S});
                     },
                     down: function () {
-                        swipeTarget.css({backgroundColor: colorMap.N});
+                        swipeTarget.div.css({backgroundColor: colorMap.N});
                     },
                     left: function () {
-                        swipeTarget.css({backgroundColor: colorMap.O});
+                        swipeTarget.div.css({backgroundColor: colorMap.O});
                     },
                     right: function () {
-                        swipeTarget.css({backgroundColor: colorMap.W});
+                        swipeTarget.div.css({backgroundColor: colorMap.W});
                     }
                 }
             };
