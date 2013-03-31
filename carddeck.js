@@ -100,7 +100,8 @@ window.swipee = (function () {
     'use strict';
 
     var swipee = function (args) {
-        this.div = window.div().css({
+        this.div = window.div()
+        .css({
             position: 'absolute',
             top: '0px',
             left: '0px',
@@ -110,11 +111,12 @@ window.swipee = (function () {
             border: 'solid 1px white',
             opacity: '0',
             webkitTransitionDuration: '500ms'
-        });
-
-        this.div.setY(580).setX(25).setSat(0).commit();
-
-        document.body.appendChild(this.div.dom);
+        })
+        .setY(580)
+        .setX(25)
+        .setSat(0)
+        .commit()
+        .appendTo(document.body);
     };
 
     var pt = swipee.prototype;
