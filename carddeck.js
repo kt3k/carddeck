@@ -13,18 +13,22 @@ window.card = (function () {
         this.eventListener = args.eventListener;
         this.duration = args.duration || 0;
 
-        this.div = window.div({
+        this.div = window.div()
+        .css({
             position: 'absolute',
             width: '75px',
             height: '95px',
             webkitTransitionDuration: this.duration + 'ms',
             webkitTransitionTimingFunction: 'ease-out',
             border: 'solid 1px white'
-        });
-
-        this.div.setHue(args.color.hue).setSat(args.color.sat).setLum(args.color.lum);
-
-        this.div.setScale(0).setX(110).setY(380).commit();
+        })
+        .setHue(args.color.hue)
+        .setSat(args.color.sat)
+        .setLum(args.color.lum)
+        .setScale(0)
+        .setX(110)
+        .setY(380)
+        .commit()
 
         this.div.dom.wrapper = this;
 
@@ -38,9 +42,13 @@ window.card = (function () {
     pt.appear = function () {
         var self = this;
 
-        window.elapsed(10).then(function () {
-            self.div.setScale(100).setX(100 * self.i + 15).setY(245).commit();
-        });
+        this.div
+        .transition()
+        .duration(this.duration)
+        .setScale(100)
+        .setX(100 * self.i + 15)
+        .setY(245)
+        .transitionCommit();
     };
 
     pt.disappear = function (args) {
