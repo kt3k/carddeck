@@ -1,8 +1,8 @@
 /**
  * carddeck.js 0.0.2
- * author: kt3k
- * license: Copyrighted
- * dependency: div.js@1.0
+ * author: Yosiya Hinosawa ( @kt3k )
+ * license: MIT-license ( http://kt3k.mit-license.org/ )
+ * dependency: div.js@2.0
  */
 
 window.card = (function () {
