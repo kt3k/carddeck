@@ -28,7 +28,7 @@ window.card = (function () {
         .setScale(0)
         .setX(110)
         .setY(380)
-        .commit()
+        .commit();
 
         this.bindListener();
 
@@ -63,7 +63,7 @@ window.card = (function () {
         .setScale(0)
         .setX(110)
         .setY(150)
-        .transitionCommit()
+        .transitionCommit();
 
         window.elapsed(this.duration + delay).then(function () {
             div.remove();
@@ -108,7 +108,7 @@ window.card = (function () {
 window.swipee = (function () {
     'use strict';
 
-    var swipee = function (args) {
+    var swipee = function () {
         this.div = window.div()
         .css({
             position: 'absolute',
@@ -118,7 +118,7 @@ window.swipee = (function () {
             height: '120px',
             backgroundColor: 'gray',
             border: 'solid 1px white',
-            opacity: '0',
+            opacity: '0'
         })
         .setY(580)
         .setX(25)
@@ -149,12 +149,12 @@ window.swipee = (function () {
 
         setTimeout(function () {
             that.remove;
-        }, 1000)
+        }, 1000);
     };
 
     pt.remove = function () {
         this.div.remove();
-    }
+    };
 
     var exports = function (args) {
         return new swipee(args);
@@ -172,10 +172,6 @@ this.cardDeck = function (window) {
     'use strict';
 
     // --- module functions --- //
-
-    var call = function (func) {
-        return typeof func === 'function' ? func() : undefined;
-    };
 
     var exports = function (signHook) {
 
@@ -263,7 +259,7 @@ this.cardDeck = function (window) {
 
         window.documentReady(function () {
 
-            swipeTarget = new swipee();
+            swipeTarget = new window.swipee();
 
             var swipe = {
                 target: swipeTarget.div.dom,
