@@ -110,16 +110,26 @@ window.swipee = (function () {
             backgroundColor: 'gray',
             border: 'solid 1px white',
             opacity: '0',
-            webkitTransitionDuration: '500ms'
         })
         .setY(580)
         .setX(25)
         .setSat(0)
         .commit()
-        .appendTo(document.body);
+        .appendTo(document.body)
+        .transition()
+        .css({opacity: 1})
+        .transition()
+        .addY(-200)
+        .transition()
+        .duration(200)
+        .transitionCommit();
     };
 
     var pt = swipee.prototype;
+
+    pt.remove = function () {
+        this.div.remove();
+    }
 
     var exports = function (args) {
         return new swipee(args);
@@ -140,39 +150,6 @@ this.cardDeck = function (window) {
 
     var call = function (func) {
         return typeof func === 'function' ? func() : undefined;
-    };
-
-    var createSwipeTarget = function () {
-        var div = window.div().css({
-            position: 'absolute',
-            top: '0px',
-            left: '0px',
-            width: '250px',
-            height: '120px',
-            backgroundColor: 'gray',
-            border: 'solid 1px white',
-            opacity: '0',
-            webkitTransitionDuration: '500ms'
-        });
-
-        div.setY(580).setX(25).setSat(0).commit();
-
-        document.body.appendChild(div.dom);
-
-        window.elapsed(0).then(function () {
-            div.css({opacity: 1}).commit();
-
-            window.elapsed(500).then(function () {
-                div.addY(-200);
-                div.commit();
-
-                window.elapsed(0).then(function () {
-                    div.css({webkitTransitionDuration: '200ms'}).commit();
-                });
-            });
-        });
-
-        return div;
     };
 
     var exports = function (signHook) {
@@ -256,10 +233,10 @@ this.cardDeck = function (window) {
 
         window.documentReady(function () {
 
-            swipeTarget = createSwipeTarget();
+            swipeTarget = new swipee();
 
             var swipe = {
-                target: swipeTarget.dom,
+                target: swipeTarget.div.dom,
                 end: {
                     up: function () {
                         machine.command('S');
