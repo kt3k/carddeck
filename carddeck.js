@@ -127,6 +127,22 @@ window.swipee = (function () {
 
     var pt = swipee.prototype;
 
+    pt.fadeAwayAndRemove = function () {
+        this.div
+        .transition()
+        .addY(200)
+        .transition()
+        .delay(400)
+        .css({opacity: 0})
+        .transitionCommit();
+
+        var that = this;
+
+        setTimeout(function () {
+            that.remove;
+        }, 1000)
+    };
+
     pt.remove = function () {
         this.div.remove();
     }
@@ -278,7 +294,6 @@ this.cardDeck = function (window) {
                 window.arrowkeys.clear();
                 window.swipe4.clear();
 
-                swipeTarget.css({webkitTransitionDuration: '500ms'}).addY(200).commit();
 
                 deck.forEach(function (card) {
                     card.disappear2();
@@ -286,13 +301,7 @@ this.cardDeck = function (window) {
 
                 deck = [];
 
-                window.elapsed(400).then(function () {
-                    swipeTarget.css({webkitTransitionDuration: '500ms', opacity: 0}).commit();
-
-                    window.elapsed(1000).then(function () {
-                        swipeTarget.dom.parentElement.removeChild(swipeTarget.dom);
-                    });
-                });
+                swipeTarget.fadeAwayAndRemove();
             }
         };
     };
