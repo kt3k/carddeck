@@ -30,8 +30,6 @@ window.card = (function () {
         .setY(380)
         .commit()
 
-        this.div.dom.wrapper = this;
-
         this.bindListener();
 
         document.body.insertBefore(this.div.dom, document.body.firstChild);
@@ -64,7 +62,6 @@ window.card = (function () {
         });
 
         window.elapsed(this.duration + args.delay).then(function () {
-            delete dom.wrapper;
             dom.parentElement.removeChild(dom);
         });
     };
@@ -79,7 +76,6 @@ window.card = (function () {
         this.div.commit();
 
         window.elapsed(1000).then(function () {
-            delete dom.wrapper;
             dom.parentElement.removeChild(dom);
         });
     };
