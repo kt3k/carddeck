@@ -38,13 +38,11 @@ window.card = (function () {
     var pt = card.prototype;
 
     pt.appear = function () {
-        var self = this;
-
         this.div
         .transition()
         .duration(this.duration)
         .setScale(100)
-        .setX(100 * self.i + 15)
+        .setX(100 * this.i + 15)
         .setY(245)
         .transitionCommit();
     };
@@ -63,26 +61,31 @@ window.card = (function () {
         .setScale(0)
         .setX(110)
         .setY(150)
-        .transitionCommit();
-
-        window.elapsed(this.duration + delay).then(function () {
+        .transition()
+        .duration(this.duration)
+        .delay(delay)
+        .callback(function () {
             div.remove();
-        });
+        })
+        .transitionCommit();
     };
 
     pt.disappear2 = function () {
-        var dom = this.div.dom;
+        var div = this.div;
 
         this.unbindListener();
 
         this.div
         .setScale(0)
         .addRot(Math.random() * 720 - 360)
-        .commit();
-
-        window.elapsed(1000).then(function () {
-            dom.parentElement.removeChild(dom);
-        });
+        .commit()
+        .transition()
+        .duration(this.duration)
+        .delay(1000 - this.duration)
+        .callback(function () {
+            div.remove();
+        })
+        .transitionCommit();
     };
 
     pt.bindListener = function () {
@@ -137,19 +140,20 @@ window.swipee = (function () {
     var pt = swipee.prototype;
 
     pt.fadeAwayAndRemove = function () {
+        var that = this;
+
         this.div
         .transition()
         .addY(200)
         .transition()
         .delay(400)
         .css({opacity: 0})
+        .transition()
+        .duration(1000)
+        .callback(function () {
+            that.remove();
+        })
         .transitionCommit();
-
-        var that = this;
-
-        setTimeout(function () {
-            that.remove;
-        }, 1000);
     };
 
     pt.remove = function () {
