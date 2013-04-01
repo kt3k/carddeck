@@ -48,8 +48,6 @@ window.card = (function () {
     };
 
     pt.disappear = function (args) {
-        var div = this.div;
-
         var delay = args.delay || 0;
 
         this.unbindListener();
@@ -64,15 +62,11 @@ window.card = (function () {
         .transition()
         .duration(this.duration)
         .delay(delay)
-        .callback(function () {
-            div.remove();
-        })
+        .remove()
         .transitionCommit();
     };
 
     pt.disappear2 = function () {
-        var div = this.div;
-
         this.unbindListener();
 
         this.div
@@ -82,9 +76,7 @@ window.card = (function () {
         .transition()
         .duration(this.duration)
         .delay(1000 - this.duration)
-        .callback(function () {
-            div.remove();
-        })
+        .remove()
         .transitionCommit();
     };
 
@@ -140,8 +132,6 @@ window.swipee = (function () {
     var pt = swipee.prototype;
 
     pt.fadeAwayAndRemove = function () {
-        var that = this;
-
         this.div
         .transition()
         .addY(200)
@@ -150,9 +140,7 @@ window.swipee = (function () {
         .css({opacity: 0})
         .transition()
         .duration(1000)
-        .callback(function () {
-            that.remove();
-        })
+        .remove()
         .transitionCommit();
     };
 
