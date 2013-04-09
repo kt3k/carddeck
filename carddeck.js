@@ -16,8 +16,8 @@ window.card = (function () {
         this.div = window.div()
         .css({
             position: 'absolute',
-            width: '75px',
-            height: '95px',
+            width: '62px',
+            height: '100px',
             webkitTransitionDuration: this.duration + 'ms',
             webkitTransitionTimingFunction: 'ease-out',
             border: 'solid 1px white'
@@ -109,11 +109,15 @@ window.swipee = (function () {
             position: 'absolute',
             top: '0px',
             left: '0px',
-            width: '250px',
-            height: '120px',
+            width: '162px',
+            height: '100px',
             backgroundColor: 'gray',
             border: 'solid 1px white',
-            opacity: '0'
+            opacity: '0',
+            lineHeight: '100px',
+            textAlign: 'center',
+            fontFamily: 'menlo, monospace',
+            fontWeight: 'bold'
         })
         .setY(580)
         .setX(25)
@@ -127,6 +131,8 @@ window.swipee = (function () {
         .transition()
         .duration(200)
         .transitionCommit();
+
+        this.div.dom.textContent = 'SWIPE HERE';
     };
 
     var pt = swipee.prototype;
