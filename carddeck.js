@@ -20,7 +20,8 @@ window.card = (function () {
             height: '100px',
             webkitTransitionDuration: this.duration + 'ms',
             webkitTransitionTimingFunction: 'ease-out',
-            border: 'solid 1px white'
+            border: 'solid 1px white',
+            backgroundImage: 'url(img/' + args.color.symbol + '_.png)'
         })
         .setHue(args.color.hue)
         .setSat(args.color.sat)
@@ -181,22 +182,26 @@ this.cardDeck = function (window) {
             S: {
                 hue: Math.floor(Math.random() * 360),
                 sat: 80,
-                lum: 50
+                lum: 50,
+                symbol: 'x'
             },
             N: {
                 hue: Math.floor(Math.random() * 360),
                 sat: 40,
-                lum: 50
+                lum: 50,
+                symbol: 'm'
             },
             O: {
                 hue: Math.floor(Math.random() * 360),
                 sat: 80,
-                lum: 50
+                lum: 50,
+                symbol: 'l'
             },
             W: {
                 hue: Math.floor(Math.random() * 360),
                 sat: 80,
-                lum: 50
+                lum: 50,
+                symbol: 's'
             },
             NONE: {
                 hue: 0,
