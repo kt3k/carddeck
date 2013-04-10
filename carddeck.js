@@ -5,6 +5,12 @@
  * dependency: div.js@2.0
  */
 
+window.imgPool = new ImagePool()
+.createCache('img/x_.png', 5)
+.createCache('img/l_.png', 5)
+.createCache('img/m_.png', 5)
+.createCache('img/s_.png', 5);
+
 window.card = (function () {
     'use strict';
 
@@ -20,8 +26,7 @@ window.card = (function () {
             height: '100px',
             webkitTransitionDuration: this.duration + 'ms',
             webkitTransitionTimingFunction: 'ease-out',
-            border: 'solid 1px white',
-            backgroundImage: 'url(img/' + args.color.symbol + '_.png)'
+            border: 'solid 1px white'
         })
         .setHue(args.color.hue)
         .setSat(args.color.sat)
@@ -30,6 +35,8 @@ window.card = (function () {
         .setX(110)
         .setY(380)
         .commit();
+
+        this.div.dom.appendChild(window.imgPool.get('img/' + args.color.symbol + '_.png'));
 
         this.bindListener();
 
