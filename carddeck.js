@@ -6,10 +6,10 @@
  */
 
 window.imgPool = new ImagePool()
-.createCache('img/x_.png', 5)
-.createCache('img/l_.png', 5)
-.createCache('img/m_.png', 5)
-.createCache('img/s_.png', 5);
+.createCache('img/x_.png', 15)
+.createCache('img/l_.png', 15)
+.createCache('img/m_.png', 15)
+.createCache('img/s_.png', 15);
 
 window.card = (function () {
     'use strict';
@@ -34,13 +34,12 @@ window.card = (function () {
         .setScale(0)
         .setX(110)
         .setY(380)
+        .prependTo(document.body)
         .commit();
 
         this.div.dom.appendChild(window.imgPool.get('img/' + args.color.symbol + '_.png'));
 
         this.bindListener();
-
-        document.body.insertBefore(this.div.dom, document.body.firstChild);
     };
 
     var pt = card.prototype;
