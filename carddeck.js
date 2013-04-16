@@ -261,10 +261,12 @@ this.cardDeck = function (window) {
 
         var pop = function () {
             machine.pop();
+            recorder.pop();
             deck.pop().disappear2();
         };
 
-        var machine = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
+        var machine = window.ribosome = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
+        var recorder = window.rec = window.recorder();
 
         window.documentReady(function () {
 
@@ -275,15 +277,19 @@ this.cardDeck = function (window) {
 
                 end: {
                     up: function () {
+                        recorder.record('S');
                         machine.command('S');
                     },
                     down: function () {
+                        recorder.record('N');
                         machine.command('N');
                     },
                     left: function () {
+                        recorder.record('O');
                         machine.command('O');
                     },
                     right: function () {
+                        recorder.record('W');
                         machine.command('W');
                     }
                 },
