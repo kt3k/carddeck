@@ -59,12 +59,18 @@ window.recorder = (function () {
 
         var self = this;
 
-        this.replayTimer = window.setInterval(function () {
+        this.__replaying__ = true;
+
+        var replay = function () {
             if (replayList.length === 0) {
-                self.replayStop();
+                return;
             }
             player(replayList.shift());
-        }, interval);
+
+            self.replayTimer = setTimeout(replay, replayList.length % 3 === 0 ? interval : 25);
+        };
+
+        replay();
     };
 
     recorderPrototype.replayStop = function () {
