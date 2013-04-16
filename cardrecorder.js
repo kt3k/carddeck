@@ -67,7 +67,7 @@ window.recorder = (function () {
             }
             player(replayList.shift());
 
-            self.replayTimer = setTimeout(replay, replayList.length % 3 === 0 ? interval : 25);
+            self.replayTimer = setTimeout(replay, replayList.length % 3 === 0 ? interval : 75);
         };
 
         replay();
