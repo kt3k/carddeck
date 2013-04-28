@@ -51,26 +51,22 @@ window.card = (function () {
         .setScale(100)
         .setX(100 * this.i + 15)
         .setY(245)
+        .callback(function () {console.log('card appear callback');})
         .transitionCommit();
     };
 
-    pt.disappear = function (args) {
-        var delay = args.delay || 0;
+    pt.disappear = function () {
 
         this.unbindListener();
 
         this.div
         .transition()
         .duration(this.duration)
-        .delay(delay)
         .setScale(0)
         .setX(110)
         .setY(150)
-        .transition()
-        .duration(this.duration)
-        .delay(delay)
         .remove()
-        .transitionCommit();
+        .transitionCommitSync();
     };
 
     pt.disappear2 = function () {
@@ -137,7 +133,8 @@ window.swipee = (function () {
         .addY(-200)
         .transition()
         .duration(200)
-        .transitionCommit();
+        .transitionCommitSync()
+        .transitionUnlock();
 
         this.div.dom.textContent = 'SWIPE HERE';
     };
@@ -242,7 +239,8 @@ this.cardDeck = function (window) {
             .setHue(colorMap.NONE.hue)
             .setSat(colorMap.NONE.sat)
             .setLum(colorMap.NONE.lum)
-            .transitionCommit();
+            .transitionCommitSync()
+            .transitionUnlock();
         };
 
         var codonHook = function (syms) {
@@ -250,11 +248,15 @@ this.cardDeck = function (window) {
             var prevDeck = deck;
             deck = [];
 
-            prevDeck.forEach(function (card) {
-                card.disappear({delay: 575});
+            window.elapsed(575)
+            .then(function () {
+                prevDeck.forEach(function (card) {
+                    card.disappear({});
+                });
             });
 
-            window.elapsed(875).then(function () {
+            window.elapsed(875)
+            .then(function () {
                 signHook(syms.join(''));
             });
         };
