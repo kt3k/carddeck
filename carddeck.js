@@ -51,7 +51,6 @@ window.card = (function () {
         .setScale(100)
         .setX(100 * this.i + 15)
         .setY(245)
-        .callback(function () {console.log('card appear callback');})
         .transitionCommit();
     };
 
