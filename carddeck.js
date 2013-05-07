@@ -5,7 +5,7 @@
  * dependency: div.js@2.0
  */
 
-window.imgPool = new ImagePool()
+window.imgPool = new window.ImagePool()
 .createCache('img/x_.png', 15)
 .createCache('img/l_.png', 15)
 .createCache('img/m_.png', 15)
@@ -155,7 +155,6 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         .remove()
         .transitionCommit();
     };
-
 });
 
 
