@@ -105,31 +105,34 @@ window.card = (function () {
 window.swipee = (function () {
     'use strict';
 
-    var swipee = function () {
+    var swipee = function (targetDom, targetWidth, targetHeight, screenWidth, screenHeight) {
+        this.targetHeight = targetHeight;
+        this.targetWidth = targetWidth;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
         this.div = window.div()
         .css({
             position: 'absolute',
             top: '0px',
             left: '0px',
-            width: '162px',
-            height: '100px',
+            width: this.targetWidth + 'px',
+            height: this.targetHeight + 'px',
             backgroundColor: 'gray',
-            border: 'solid 1px white',
             opacity: '0',
-            lineHeight: '100px',
+            lineHeight: this.targetHeight + 'px',
             textAlign: 'center',
             fontFamily: 'menlo, monospace',
             fontWeight: 'bold'
         })
-        .setY(580)
-        .setX(25)
+        .setY(this.screenHeight)
+        .setX((this.screenWidth - this.targetWidth)/2)
         .setSat(0)
         .commit()
-        .appendTo(document.body)
+        .appendTo(targetDom)
         .transition()
         .css({opacity: 1})
         .transition()
-        .addY(-200)
+        .addY(-this.targetHeight)
         .transition()
         .duration(200)
         .transitionCommitSync()
@@ -143,7 +146,7 @@ window.swipee = (function () {
     pt.fadeAwayAndRemove = function () {
         this.div
         .transition()
-        .addY(200)
+        .addY(this.targetHeight)
         .transition()
         .delay(400)
         .css({opacity: 0})
@@ -157,8 +160,8 @@ window.swipee = (function () {
         this.div.remove();
     };
 
-    var exports = function (args) {
-        return new swipee(args);
+    var exports = function (dom, targetWidth, targetHeight, screenWidth, screenHeight) {
+        return new swipee(dom, targetWidth, targetHeight, screenWidth, screenHeight);
     };
 
     pt.constructor = exports;
@@ -174,7 +177,7 @@ this.cardDeck = function (window) {
 
     // --- module functions --- //
 
-    var exports = function (signHook) {
+    var exports = function (signHook, dom) {
 
         var swipeTarget = null;
 
@@ -222,7 +225,8 @@ this.cardDeck = function (window) {
                 duration: 300,
                 eventListener: function () {
                     pop();
-                }
+                },
+                targetDom: dom
             });
 
             deck.push(card);
@@ -271,7 +275,7 @@ this.cardDeck = function (window) {
 
         window.documentReady(function () {
 
-            swipeTarget = new window.swipee();
+            swipeTarget = new window.swipee(dom, 190, 80, 320, 414);
 
             var swipe = {
                 target: swipeTarget.div.dom,
