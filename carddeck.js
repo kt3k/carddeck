@@ -105,11 +105,12 @@ window.card = (function () {
 window.swipee = window.div.branch(function (swipeePrototype, parent, decorators) {
     'use strict';
 
-    swipeePrototype.init = function (targetDom, targetWidth, targetHeight, screenWidth, screenHeight) {
+    swipeePrototype.init = function (targetDom, targetWidth, targetHeight, screenWidth, screenHeight, defaultColor) {
         this.targetHeight = targetHeight;
         this.targetWidth = targetWidth;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.defaultColor = defaultColor;
 
         this
         .css({
@@ -118,8 +119,6 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
             left: '0px',
             width: this.targetWidth + 'px',
             height: this.targetHeight + 'px',
-            backgroundColor: 'gray',
-            opacity: '0',
             lineHeight: this.targetHeight + 'px',
             textAlign: 'center',
             fontFamily: 'menlo, monospace',
@@ -127,12 +126,11 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         })
         .setY(this.screenHeight)
         .setX((this.screenWidth - this.targetWidth) / 2)
-        .setSat(0)
+        .setColor(defaultColor)
         .commit()
         .appendTo(targetDom)
         .transition()
-        .css({opacity: 1})
-        .transition()
+        .delay(500)
         .addY(-this.targetHeight)
         .transition()
         .duration(200)
@@ -155,6 +153,25 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         .remove()
         .transitionCommit();
     };
+
+    swipeePrototype.setColor = function (color) {
+        this
+        .setHue(color.hue)
+        .setSat(color.sat)
+        .setLum(color.lum)
+    }
+    .E(decorators.Chainable);
+
+    swipeePrototype.lightUp = function (color) {
+        this
+        .setColor(color)
+        .commit()
+        .transition()
+        .delay(400)
+        .setColor(this.defaultColor)
+        .transitionCommitSync()
+        .transitionUnlock();
+    }
 });
 
 
@@ -218,18 +235,7 @@ this.cardDeck = function (window) {
             deck.push(card);
             card.appear();
 
-            swipeTarget.div
-            .setHue(color.hue)
-            .setSat(color.sat)
-            .setLum(color.lum)
-            .commit()
-            .transition()
-            .delay(400)
-            .setHue(colorMap.NONE.hue)
-            .setSat(colorMap.NONE.sat)
-            .setLum(colorMap.NONE.lum)
-            .transitionCommitSync()
-            .transitionUnlock();
+            swipeTarget.lightUp(color);
         };
 
         var codonHook = function (syms) {
@@ -261,7 +267,7 @@ this.cardDeck = function (window) {
 
         window.documentReady(function () {
 
-            swipeTarget = new window.swipee().init(dom, 190, 80, 320, 414);
+            swipeTarget = window.sw = new window.swipee().init(dom, 190, 80, 320, 414, colorMap.NONE);
 
             var swipe = {
                 target: swipeTarget.dom,
