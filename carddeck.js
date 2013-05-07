@@ -102,15 +102,16 @@ window.card = (function () {
 }());
 
 
-window.swipee = (function () {
+window.swipee = window.div.branch(function (swipeePrototype, parent, decorators) {
     'use strict';
 
-    var swipee = function (targetDom, targetWidth, targetHeight, screenWidth, screenHeight) {
+    swipeePrototype.init = function (targetDom, targetWidth, targetHeight, screenWidth, screenHeight) {
         this.targetHeight = targetHeight;
         this.targetWidth = targetWidth;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.div = window.div()
+
+        this
         .css({
             position: 'absolute',
             top: '0px',
@@ -125,7 +126,7 @@ window.swipee = (function () {
             fontWeight: 'bold'
         })
         .setY(this.screenHeight)
-        .setX((this.screenWidth - this.targetWidth)/2)
+        .setX((this.screenWidth - this.targetWidth) / 2)
         .setSat(0)
         .commit()
         .appendTo(targetDom)
@@ -138,13 +139,12 @@ window.swipee = (function () {
         .transitionCommitSync()
         .transitionUnlock();
 
-        this.div.dom.textContent = 'SWIPE HERE';
-    };
+        this.dom.textContent = 'SWIPE HERE';
+    }
+    .E(decorators.Chainable);
 
-    var pt = swipee.prototype;
-
-    pt.fadeAwayAndRemove = function () {
-        this.div
+    swipeePrototype.fadeAwayAndRemove = function () {
+        this
         .transition()
         .addY(this.targetHeight)
         .transition()
@@ -156,20 +156,7 @@ window.swipee = (function () {
         .transitionCommit();
     };
 
-    pt.remove = function () {
-        this.div.remove();
-    };
-
-    var exports = function (dom, targetWidth, targetHeight, screenWidth, screenHeight) {
-        return new swipee(dom, targetWidth, targetHeight, screenWidth, screenHeight);
-    };
-
-    pt.constructor = exports;
-
-    exports.prototype = pt;
-
-    return exports;
-}());
+});
 
 
 this.cardDeck = function (window) {
@@ -275,10 +262,10 @@ this.cardDeck = function (window) {
 
         window.documentReady(function () {
 
-            swipeTarget = new window.swipee(dom, 190, 80, 320, 414);
+            swipeTarget = new window.swipee().init(dom, 190, 80, 320, 414);
 
             var swipe = {
-                target: swipeTarget.div.dom,
+                target: swipeTarget.dom,
 
                 end: {
                     up: function () {
