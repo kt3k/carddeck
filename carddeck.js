@@ -52,6 +52,8 @@ window.card = (function () {
         .setX(100 * this.i + 15)
         .setY(245)
         .transitionCommit();
+
+        return this;
     };
 
     pt.disappear = function () {
@@ -220,22 +222,17 @@ this.cardDeck = function (window) {
 
         var monoHook = function (n, cmd) {
 
-            var color = colorMap[cmd];
-
-            var card = window.card({
+            deck.push(new window.card({
                 i: n,
-                color: color,
+                color: colorMap[cmd],
                 duration: 300,
                 eventListener: function () {
                     pop();
                 },
                 targetDom: dom
-            });
+            }).appear());
 
-            deck.push(card);
-            card.appear();
-
-            swipeTarget.lightUp(color);
+            swipeTarget.lightUp(colorMap[cmd]);
         };
 
         var codonHook = function (syms) {
