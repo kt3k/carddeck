@@ -177,7 +177,7 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
 });
 
 
-this.cardDeck = function (window) {
+this.cardDeck = (function (window) {
     'use strict';
 
     // --- module functions --- //
@@ -291,19 +291,19 @@ this.cardDeck = function (window) {
                 progress: {
                     up: function () {
                         var color = colorMap.S;
-                        swipeTarget.div.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     down: function () {
                         var color = colorMap.N;
-                        swipeTarget.div.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     left: function () {
                         var color = colorMap.O;
-                        swipeTarget.div.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     right: function () {
                         var color = colorMap.W;
-                        swipeTarget.div.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     }
                 }
             };
@@ -332,4 +332,4 @@ this.cardDeck = function (window) {
 
     return exports;
 
-}(window);
+}(window));
