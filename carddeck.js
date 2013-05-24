@@ -259,52 +259,49 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.machine = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
         this.recorder = window.recorder();
 
-        window.documentReady(function () {
+        self.swipeTarget = new window.swipee().init(dom, 190, 80, 320, 414, self.colorMap.NONE);
 
-            self.swipeTarget = new window.swipee().init(dom, 190, 80, 320, 414, self.colorMap.NONE);
+        var swipe = {
+            target: self.swipeTarget.dom,
 
-            var swipe = {
-                target: self.swipeTarget.dom,
-
-                end: {
-                    up: function () {
-                        self.recorder.record('S');
-                        self.machine.command('S');
-                    },
-                    down: function () {
-                        self.recorder.record('N');
-                        self.machine.command('N');
-                    },
-                    left: function () {
-                        self.recorder.record('O');
-                        self.machine.command('O');
-                    },
-                    right: function () {
-                        self.recorder.record('W');
-                        self.machine.command('W');
-                    }
+            end: {
+                up: function () {
+                    self.recorder.record('S');
+                    self.machine.command('S');
                 },
-
-                progress: {
-                    up: function () {
-                        self.swipeTarget.setColor(self.colorMap.S).commit();
-                    },
-                    down: function () {
-                        self.swipeTarget.setColor(self.colorMap.N).commit();
-                    },
-                    left: function () {
-                        self.swipeTarget.setColor(self.colorMap.O).commit();
-                    },
-                    right: function () {
-                        self.swipeTarget.setColor(self.colorMap.W).commit();
-                    }
+                down: function () {
+                    self.recorder.record('N');
+                    self.machine.command('N');
+                },
+                left: function () {
+                    self.recorder.record('O');
+                    self.machine.command('O');
+                },
+                right: function () {
+                    self.recorder.record('W');
+                    self.machine.command('W');
                 }
-            };
+            },
 
-            window.swipe4(swipe);
+            progress: {
+                up: function () {
+                    self.swipeTarget.setColor(self.colorMap.S).commit();
+                },
+                down: function () {
+                    self.swipeTarget.setColor(self.colorMap.N).commit();
+                },
+                left: function () {
+                    self.swipeTarget.setColor(self.colorMap.O).commit();
+                },
+                right: function () {
+                    self.swipeTarget.setColor(self.colorMap.W).commit();
+                }
+            }
+        };
 
-            window.arrowkeys(swipe.end);
-        });
+        window.swipe4(swipe);
+
+        window.arrowkeys(swipe.end);
     };
 
     deckPrototype.clear = function () {
