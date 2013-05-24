@@ -174,16 +174,16 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
 });
 
 
-this.cardDeck = (function (window) {
+this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
     'use strict';
 
-    // --- module functions --- //
+    deckPrototype
 
-    var exports = function (signHook, dom) {
+    deckPrototype.constructor = function (signHook, dom) {
 
-        var swipeTarget = null;
+        var self = this;
 
-        var deck = [];
+        var deck = this.deck = [];
 
         var colorMap = {
             S: {
@@ -219,7 +219,7 @@ this.cardDeck = (function (window) {
 
         var monoHook = function (n, cmd) {
 
-            deck.push(new window.card({
+            self.deck.push(new window.card({
                 i: n,
                 color: colorMap[cmd],
                 duration: 300,
@@ -229,13 +229,13 @@ this.cardDeck = (function (window) {
                 targetDom: dom
             }).appear());
 
-            swipeTarget.lightUp(colorMap[cmd]);
+            self.swipeTarget.lightUp(colorMap[cmd]);
         };
 
         var codonHook = function (syms) {
 
-            var prevDeck = deck;
-            deck = [];
+            var prevDeck = self.deck;
+            self.deck = [];
 
             window.elapsed(575)
             .then(function () {
@@ -261,10 +261,10 @@ this.cardDeck = (function (window) {
 
         window.documentReady(function () {
 
-            swipeTarget = window.sw = new window.swipee().init(dom, 190, 80, 320, 414, colorMap.NONE);
+            var swipeTarget = self.swipeTarget = new window.swipee().init(dom, 190, 80, 320, 414, colorMap.NONE);
 
             var swipe = {
-                target: swipeTarget.dom,
+                target: self.swipeTarget.dom,
 
                 end: {
                     up: function () {
@@ -288,19 +288,19 @@ this.cardDeck = (function (window) {
                 progress: {
                     up: function () {
                         var color = colorMap.S;
-                        swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     down: function () {
                         var color = colorMap.N;
-                        swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     left: function () {
                         var color = colorMap.O;
-                        swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     right: function () {
                         var color = colorMap.W;
-                        swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     }
                 }
             };
@@ -309,24 +309,20 @@ this.cardDeck = (function (window) {
 
             window.arrowkeys(swipe.end);
         });
-
-        return { // return a deck object which only has 'clear method'
-            clear: function () {
-                window.arrowkeys.clear();
-                window.swipe4.clear();
-
-
-                deck.forEach(function (card) {
-                    card.disappear2();
-                });
-
-                deck = [];
-
-                swipeTarget.fadeAwayAndRemove();
-            }
-        };
     };
 
-    return exports;
+    deckPrototype.clear = function () {
+        window.arrowkeys.clear();
+        window.swipe4.clear();
 
-}(window));
+
+        this.deck.forEach(function (card) {
+            card.disappear2();
+        });
+
+        this.deck = [];
+
+        this.swipeTarget.fadeAwayAndRemove();
+    };
+
+});
