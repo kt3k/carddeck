@@ -287,20 +287,16 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
                 progress: {
                     up: function () {
-                        var color = self.colorMap.S;
-                        self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        self.swipeTarget.setColor(self.colorMap.S).commit();
                     },
                     down: function () {
-                        var color = self.colorMap.N;
-                        self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        self.swipeTarget.setColor(self.colorMap.N).commit();
                     },
                     left: function () {
-                        var color = self.colorMap.O;
-                        self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        self.swipeTarget.setColor(self.colorMap.O).commit();
                     },
                     right: function () {
-                        var color = self.colorMap.W;
-                        self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
+                        self.swipeTarget.setColor(self.colorMap.W).commit();
                     }
                 }
             };
