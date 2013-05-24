@@ -209,13 +209,15 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         }
     };
 
-    deckPrototype.constructor = function (signHook, dom) {
+    deckPrototype.init = function (signHook, dom) {
 
         var self = this;
 
         this.deck = [];
 
         this.signHook = signHook;
+
+        this.dom = dom;
 
         var monoHook = function (n, cmd) {
 
@@ -226,7 +228,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
                 eventListener: function () {
                     pop();
                 },
-                targetDom: dom
+                targetDom: this.dom
             }).appear());
 
             self.swipeTarget.lightUp(self.colorMap[cmd]);
@@ -259,10 +261,16 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.machine = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
         this.recorder = window.recorder();
 
-        self.swipeTarget = new window.swipee().init(dom, 190, 80, 320, 414, self.colorMap.NONE);
+        return this;
+    };
+
+    deckPrototype.appear = function () {
+        var self = this;
+
+        this.swipeTarget = new window.swipee().init(this.dom, 190, 80, 320, 414, this.colorMap.NONE);
 
         var swipe = {
-            target: self.swipeTarget.dom,
+            target: this.swipeTarget.dom,
 
             end: {
                 up: function () {
@@ -304,7 +312,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         window.arrowkeys(swipe.end);
     };
 
-    deckPrototype.clear = function () {
+    deckPrototype.disappear = function () {
         window.arrowkeys.clear();
         window.swipe4.clear();
 
