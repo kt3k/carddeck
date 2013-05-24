@@ -157,7 +157,7 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         this
         .setHue(color.hue)
         .setSat(color.sat)
-        .setLum(color.lum)
+        .setLum(color.lum);
     }
     .E(decorators.Chainable);
 
@@ -170,11 +170,11 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         .setColor(this.defaultColor)
         .transitionCommitSync()
         .transitionUnlock();
-    }
+    };
 });
 
 
-this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
+this.cardDeck = Object.branch(function (deckPrototype) {
     'use strict';
 
     deckPrototype.colorMap = {
