@@ -177,51 +177,51 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
 this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
     'use strict';
 
-    deckPrototype
+    deckPrototype.colorMap = {
+        S: {
+            hue: Math.floor(Math.random() * 360),
+            sat: 80,
+            lum: 50,
+            symbol: 'x'
+        },
+        N: {
+            hue: Math.floor(Math.random() * 360),
+            sat: 40,
+            lum: 50,
+            symbol: 'm'
+        },
+        O: {
+            hue: Math.floor(Math.random() * 360),
+            sat: 80,
+            lum: 50,
+            symbol: 'l'
+        },
+        W: {
+            hue: Math.floor(Math.random() * 360),
+            sat: 80,
+            lum: 50,
+            symbol: 's'
+        },
+        NONE: {
+            hue: 0,
+            sat: 0,
+            lum: 50
+        }
+    };
 
     deckPrototype.constructor = function (signHook, dom) {
 
         var self = this;
 
-        var deck = this.deck = [];
+        this.deck = [];
 
-        var colorMap = {
-            S: {
-                hue: Math.floor(Math.random() * 360),
-                sat: 80,
-                lum: 50,
-                symbol: 'x'
-            },
-            N: {
-                hue: Math.floor(Math.random() * 360),
-                sat: 40,
-                lum: 50,
-                symbol: 'm'
-            },
-            O: {
-                hue: Math.floor(Math.random() * 360),
-                sat: 80,
-                lum: 50,
-                symbol: 'l'
-            },
-            W: {
-                hue: Math.floor(Math.random() * 360),
-                sat: 80,
-                lum: 50,
-                symbol: 's'
-            },
-            NONE: {
-                hue: 0,
-                sat: 0,
-                lum: 50
-            }
-        };
+        this.signHook = signHook;
 
         var monoHook = function (n, cmd) {
 
             self.deck.push(new window.card({
                 i: n,
-                color: colorMap[cmd],
+                color: self.colorMap[cmd],
                 duration: 300,
                 eventListener: function () {
                     pop();
@@ -229,7 +229,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
                 targetDom: dom
             }).appear());
 
-            self.swipeTarget.lightUp(colorMap[cmd]);
+            self.swipeTarget.lightUp(self.colorMap[cmd]);
         };
 
         var codonHook = function (syms) {
@@ -246,60 +246,60 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
 
             window.elapsed(875)
             .then(function () {
-                signHook(syms.join(''));
+                self.signHook(syms.join(''));
             });
         };
 
         var pop = function () {
-            machine.pop();
-            recorder.pop();
-            deck.pop().disappear2();
+            self.machine.pop();
+            self.recorder.pop();
+            self.deck.pop().disappear2();
         };
 
-        var machine = window.ribosome = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
-        var recorder = window.rec = window.recorder();
+        this.machine = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
+        this.recorder = window.recorder();
 
         window.documentReady(function () {
 
-            var swipeTarget = self.swipeTarget = new window.swipee().init(dom, 190, 80, 320, 414, colorMap.NONE);
+            self.swipeTarget = new window.swipee().init(dom, 190, 80, 320, 414, self.colorMap.NONE);
 
             var swipe = {
                 target: self.swipeTarget.dom,
 
                 end: {
                     up: function () {
-                        recorder.record('S');
-                        machine.command('S');
+                        self.recorder.record('S');
+                        self.machine.command('S');
                     },
                     down: function () {
-                        recorder.record('N');
-                        machine.command('N');
+                        self.recorder.record('N');
+                        self.machine.command('N');
                     },
                     left: function () {
-                        recorder.record('O');
-                        machine.command('O');
+                        self.recorder.record('O');
+                        self.machine.command('O');
                     },
                     right: function () {
-                        recorder.record('W');
-                        machine.command('W');
+                        self.recorder.record('W');
+                        self.machine.command('W');
                     }
                 },
 
                 progress: {
                     up: function () {
-                        var color = colorMap.S;
+                        var color = self.colorMap.S;
                         self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     down: function () {
-                        var color = colorMap.N;
+                        var color = self.colorMap.N;
                         self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     left: function () {
-                        var color = colorMap.O;
+                        var color = self.colorMap.O;
                         self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     },
                     right: function () {
-                        var color = colorMap.W;
+                        var color = self.colorMap.W;
                         self.swipeTarget.setHue(color.hue).setSat(color.sat).setLum(color.lum).commit();
                     }
                 }
