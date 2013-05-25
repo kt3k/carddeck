@@ -209,15 +209,15 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         }
     };
 
-    deckPrototype.init = function (signHook, dom) {
+    deckPrototype.init = function (args) {
 
         var self = this;
 
         this.deck = [];
 
-        this.signHook = signHook;
+        this.opEvent = args.opEvent;
 
-        this.dom = dom;
+        this.dom = args.dom;
 
         var monoHook = function (n, cmd) {
 
@@ -228,7 +228,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
                 eventListener: function () {
                     pop();
                 },
-                targetDom: this.dom
+                targetDom: self.dom
             }).appear());
 
             self.swipeTarget.lightUp(self.colorMap[cmd]);
@@ -248,7 +248,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
             window.elapsed(875)
             .then(function () {
-                self.signHook(syms.join(''));
+                window.radio(self.opEvent).broadcast(syms.join(''));
             });
         };
 
@@ -310,6 +310,8 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         window.swipe4(swipe);
 
         window.arrowkeys(swipe.end);
+
+        return this;
     };
 
     deckPrototype.disappear = function () {
@@ -324,6 +326,8 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.deck = [];
 
         this.swipeTarget.fadeAwayAndRemove();
+
+        return this;
     };
 
 });
