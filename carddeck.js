@@ -56,7 +56,7 @@ window.card = (function () {
         return this;
     };
 
-    pt.disappear = function () {
+    pt.shoot = function () {
 
         this.unbindListener();
 
@@ -244,7 +244,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
             window.elapsed(575)
             .then(function () {
                 prevDeck.forEach(function (card) {
-                    card.disappear({});
+                    card.shoot();
                 });
             });
 
