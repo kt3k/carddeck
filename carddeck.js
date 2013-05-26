@@ -219,6 +219,8 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
         this.dom = args.dom;
 
+        this.radio = args.radio;
+
         var monoHook = function (n, cmd) {
 
             self.deck.push(new window.card({
@@ -248,7 +250,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
             window.elapsed(875)
             .then(function () {
-                window.radio(self.opEvent).broadcast(syms.join(''));
+                self.radio(self.opEvent).broadcast({codon: syms.join('')});
             });
         };
 
