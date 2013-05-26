@@ -11,15 +11,15 @@ window.imgPool = new window.ImagePool()
 .createCache('img/m_.png', 15)
 .createCache('img/s_.png', 15);
 
-window.card = (function () {
+window.card = window.div.branch(function (cardPrototype, parent, decorators) {
     'use strict';
 
-    var card = function (args) {
+    cardPrototype.init = function (args) {
         this.i = args.i;
         this.eventListener = args.eventListener;
-        this.duration = args.duration || 0;
+        this.dur = args.duration || 0;
 
-        this.div = window.div()
+        this
         .css({
             position: 'absolute',
             width: '62px',
@@ -37,17 +37,16 @@ window.card = (function () {
         .prependTo(document.body)
         .commit();
 
-        this.div.dom.appendChild(window.imgPool.get('img/' + args.color.symbol + '_.png'));
+        this.dom.appendChild(window.imgPool.get('img/' + args.color.symbol + '_.png'));
 
         this.bindListener();
-    };
+    }
+    .E(decorators.Chainable);
 
-    var pt = card.prototype;
-
-    pt.appear = function () {
-        this.div
+    cardPrototype.appear = function () {
+        this
         .transition()
-        .duration(this.duration)
+        .duration(this.dur)
         .setScale(100)
         .setX(100 * this.i + 15)
         .setY(245)
@@ -56,13 +55,12 @@ window.card = (function () {
         return this;
     };
 
-    pt.shoot = function () {
-
+    cardPrototype.shoot = function () {
         this.unbindListener();
 
-        this.div
+        this
         .transition()
-        .duration(this.duration)
+        .duration(this.dur)
         .setScale(0)
         .setX(110)
         .setY(150)
@@ -70,38 +68,28 @@ window.card = (function () {
         .transitionCommitSync();
     };
 
-    pt.disappear = function () {
+    cardPrototype.disappear = function () {
         this.unbindListener();
 
-        this.div
+        this
         .setScale(0)
         .addRot(Math.random() * 720 - 360)
         .commit()
         .transition()
-        .duration(this.duration)
-        .delay(1000 - this.duration)
+        .duration(this.dur)
+        .delay(1000 - this.dur)
         .remove()
         .transitionCommit();
     };
 
-    pt.bindListener = function () {
-        this.div.dom.addEventListener('click', this.eventListener, false);
+    cardPrototype.bindListener = function () {
+        this.dom.addEventListener('click', this.eventListener, false);
     };
 
-    pt.unbindListener = function () {
-        this.div.dom.removeEventListener('click', this.eventListener, false);
+    cardPrototype.unbindListener = function () {
+        this.dom.removeEventListener('click', this.eventListener, false);
     };
-
-    var exports = function (args) {
-        return new card(args);
-    };
-
-    pt.constructor = exports;
-
-    exports.prototype = pt;
-
-    return exports;
-}());
+});
 
 
 window.swipee = window.div.branch(function (swipeePrototype, parent, decorators) {
@@ -227,7 +215,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
         var monoHook = function (n, cmd) {
 
-            self.deck.push(new window.card({
+            self.deck.push(window.card().init({
                 i: n,
                 color: self.colorMap[cmd],
                 duration: 300,
@@ -267,12 +255,6 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.machine = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
         this.recorder = window.recorder();
 
-        return this;
-    };
-
-    deckPrototype.appear = function () {
-        var self = this;
-
         this.swipeTarget = window.swipee().init({
             dom: this.dom,
             targetWidth: 190,
@@ -280,7 +262,15 @@ this.cardDeck = Object.branch(function (deckPrototype) {
             screenWidth: 320,
             screenHeight: 414,
             defaultColor: this.colorMap.NONE
-        }).appear();
+        });
+
+        return this;
+    };
+
+    deckPrototype.appear = function () {
+        var self = this;
+
+        this.swipeTarget.appear();
 
         var swipe = {
             target: this.swipeTarget.dom,
