@@ -70,7 +70,7 @@ window.card = (function () {
         .transitionCommitSync();
     };
 
-    pt.disappear2 = function () {
+    pt.disappear = function () {
         this.unbindListener();
 
         this.div
@@ -257,7 +257,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         var pop = function () {
             self.machine.pop();
             self.recorder.pop();
-            self.deck.pop().disappear2();
+            self.deck.pop().disappear();
         };
 
         this.machine = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
@@ -322,7 +322,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
 
         this.deck.forEach(function (card) {
-            card.disappear2();
+            card.disappear();
         });
 
         this.deck = [];
