@@ -143,7 +143,7 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
     }
     .E(decorators.Chainable);
 
-    swipeePrototype.fadeAwayAndRemove = function () {
+    swipeePrototype.disappear = function () {
         this
         .transition()
         .addY(this.targetHeight)
@@ -327,7 +327,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
         this.deck = [];
 
-        this.swipeTarget.fadeAwayAndRemove();
+        this.swipeTarget.disappear();
 
         return this;
     };
