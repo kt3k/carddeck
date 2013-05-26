@@ -107,13 +107,17 @@ window.card = (function () {
 window.swipee = window.div.branch(function (swipeePrototype, parent, decorators) {
     'use strict';
 
-    swipeePrototype.init = function (targetDom, targetWidth, targetHeight, screenWidth, screenHeight, defaultColor) {
-        this.targetHeight = targetHeight;
-        this.targetWidth = targetWidth;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
-        this.defaultColor = defaultColor;
+    swipeePrototype.init = function (args) {
+        this.targetDom = args.dom;
+        this.targetHeight = args.targetHeight;
+        this.targetWidth = args.targetWidth;
+        this.screenWidth = args.screenWidth;
+        this.screenHeight = args.screenHeight;
+        this.defaultColor = args.defaultColor;
+    }
+    .E(decorators.Chainable);
 
+    swipeePrototype.appear = function () {
         this
         .css({
             position: 'absolute',
@@ -128,9 +132,9 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         })
         .setY(this.screenHeight)
         .setX((this.screenWidth - this.targetWidth) / 2)
-        .setColor(defaultColor)
+        .setColor(this.defaultColor)
         .commit()
-        .appendTo(targetDom)
+        .appendTo(this.targetDom)
         .transition()
         .delay(500)
         .addY(-this.targetHeight)
@@ -269,7 +273,14 @@ this.cardDeck = Object.branch(function (deckPrototype) {
     deckPrototype.appear = function () {
         var self = this;
 
-        this.swipeTarget = new window.swipee().init(this.dom, 190, 80, 320, 414, this.colorMap.NONE);
+        this.swipeTarget = window.swipee().init({
+            dom: this.dom,
+            targetWidth: 190,
+            targetHeight: 80,
+            screenWidth: 320,
+            screenHeight: 414,
+            defaultColor: this.colorMap.NONE
+        }).appear();
 
         var swipe = {
             target: this.swipeTarget.dom,
