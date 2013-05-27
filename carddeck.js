@@ -18,22 +18,26 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         this.i = args.i;
         this.eventListener = args.eventListener;
         this.dur = args.duration || 0;
+        this.width = 62;
+        this.height = 62;
+        this.screenWidth = args.screenWidth;
+        this.screenHeight = args.screenHeight;
+        this.swipeeHeight = args.swipeeHeight;
+        this.deckHeight = args.deckHeight;
 
         this
         .css({
             position: 'absolute',
-            width: '62px',
-            height: '100px',
-            webkitTransitionDuration: this.duration + 'ms',
-            webkitTransitionTimingFunction: 'ease-out',
-            border: 'solid 1px white'
+            width: this.width + 'px',
+            height: this.height + 'px',
+            overflow: 'hidden'
         })
         .setHue(args.color.hue)
         .setSat(args.color.sat)
         .setLum(args.color.lum)
         .setScale(0)
-        .setX(110)
-        .setY(380)
+        .setX(this.screenWidth / 2 - this.width / 2)
+        .setY(this.screenHeight - this.swipeeHeight - this.height / 2)
         .prependTo(document.body)
         .commit();
 
@@ -48,8 +52,8 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .transition()
         .duration(this.dur)
         .setScale(100)
-        .setX(100 * this.i + 15)
-        .setY(245)
+        .addX((this.i - 1) * 100)
+        .setY(this.screenHeight - this.swipeeHeight - this.deckHeight / 2 - this.height / 2)
         .transitionCommit();
 
         return this;
@@ -62,8 +66,8 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .transition()
         .duration(this.dur)
         .setScale(0)
-        .setX(110)
-        .setY(150)
+        .setX(this.screenWidth / 2 - this.width / 2)
+        .setY(this.screenHeight - this.swipeeHeight - this.deckHeight - this.height / 2)
         .remove()
         .transitionCommitSync();
     };
@@ -131,7 +135,7 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         .transitionCommitSync()
         .transitionUnlock();
 
-        this.dom.textContent = 'SWIPE HERE';
+        this.dom.innerHTML = '<blink>&laquo; SWIPE HERE &raquo;</blink>';
     }
     .E(decorators.Chainable);
 
@@ -203,6 +207,12 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
     deckPrototype.init = function (args) {
 
+        this.screenWidth = 320;
+        this.screenHeight = 414;
+        this.swipeeHeight = 80;
+        this.swipeeWidth = 190;
+        this.deckHeight = 104;
+
         var self = this;
 
         this.deck = [];
@@ -219,10 +229,12 @@ this.cardDeck = Object.branch(function (deckPrototype) {
                 i: n,
                 color: self.colorMap[cmd],
                 duration: 300,
-                eventListener: function () {
-                    pop();
-                },
-                targetDom: self.dom
+                eventListener: pop,
+                targetDom: self.dom,
+                screenWidth: self.screenWidth,
+                screenHeight: self.screenHeight,
+                swipeeHeight: self.swipeeHeight,
+                deckHeight: self.deckHeight
             }).appear());
 
             self.swipeTarget.lightUp(self.colorMap[cmd]);
@@ -257,10 +269,10 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
         this.swipeTarget = window.swipee().init({
             dom: this.dom,
-            targetWidth: 190,
-            targetHeight: 80,
-            screenWidth: 320,
-            screenHeight: 414,
+            targetWidth: this.swipeeWidth,
+            targetHeight: this.swipeeHeight,
+            screenWidth: this.screenWidth,
+            screenHeight: this.screenHeight,
             defaultColor: this.colorMap.NONE
         });
 
