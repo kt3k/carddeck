@@ -185,7 +185,7 @@ this.Deck = Object.branch(function (deckPrototype) {
         var self = this;
 
         this.dealListener = function (data) {
-            self.dealCard(data.index, data.command, data.color)
+            self.dealCard(data)
         };
 
         this.popListener = function () {
@@ -227,10 +227,10 @@ this.Deck = Object.branch(function (deckPrototype) {
         return this;
     };
 
-    deckPrototype.dealCard = function (n, cmd, color) {
+    deckPrototype.dealCard = function (data) {
         this.deck.push(window.card().init({
-            i: n,
-            color: color,
+            i: data.index,
+            color: data.color,
             duration: 300,
             eventListener: this.popBroadcaster,
             targetDom: this.dom,
