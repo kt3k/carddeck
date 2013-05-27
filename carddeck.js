@@ -213,15 +213,16 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.swipeeWidth = 190;
         this.deckHeight = 104;
 
-        var self = this;
-
-        this.deck = [];
-
         this.opEvent = args.opEvent;
+        this.baseEvent = args.baseEvent;
+        this.popEvent = args.popEvent;
+        this.radio = args.radio;
 
         this.dom = args.dom;
 
-        this.radio = args.radio;
+        this.deck = [];
+
+        var self = this;
 
         var monoHook = function (n, cmd) {
 
@@ -264,8 +265,17 @@ this.cardDeck = Object.branch(function (deckPrototype) {
             self.deck.pop().disappear();
         };
 
-        this.machine = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
-        this.recorder = window.recorder();
+        var machine = this.machine = window.ribosome = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
+        this.boxCmdListener = function (data) {
+            machine.command(data.cmd);
+        }
+        this.radio(this.baseEvent).subscribe(this.boxCmdListener);
+
+        var recorder = this.recorder = window.rec = window.recorder();
+        this.recorderCmdListener = function (data) {
+            recorder.record(data.cmd)
+        }
+        this.radio(this.baseEvent).subscribe(this.recorderCmdListener);
 
         this.swipeTarget = window.swipee().init({
             dom: this.dom,
@@ -289,20 +299,16 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
             end: {
                 up: function () {
-                    self.recorder.record('S');
-                    self.machine.command('S');
+                    self.radio(self.baseEvent).broadcast({cmd: 'S'});
                 },
                 down: function () {
-                    self.recorder.record('N');
-                    self.machine.command('N');
+                    self.radio(self.baseEvent).broadcast({cmd: 'N'});
                 },
                 left: function () {
-                    self.recorder.record('O');
-                    self.machine.command('O');
+                    self.radio(self.baseEvent).broadcast({cmd: 'O'});
                 },
                 right: function () {
-                    self.recorder.record('W');
-                    self.machine.command('W');
+                    self.radio(self.baseEvent).broadcast({cmd: 'W'});
                 }
             },
 
@@ -333,6 +339,8 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         window.arrowkeys.clear();
         window.swipe4.clear();
 
+        this.radio(this.baseEvent).unsubscribe(this.boxCmdListener);
+        this.radio(this.baseEvent).unsubscribe(this.recorderCmdListener);
 
         this.deck.forEach(function (card) {
             card.disappear();
