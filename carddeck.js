@@ -260,9 +260,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         };
 
         var pop = function () {
-            self.machine.pop();
-            self.recorder.pop();
-            self.deck.pop().disappear();
+            self.radio(self.popEvent).broadcast();
         };
 
         var machine = this.machine = window.ribosome = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
@@ -276,6 +274,21 @@ this.cardDeck = Object.branch(function (deckPrototype) {
             recorder.record(data.cmd)
         }
         this.radio(this.baseEvent).subscribe(this.recorderCmdListener);
+
+        this.boxPopListener = function (data) {
+            machine.pop();
+        };
+        this.radio(this.popEvent).subscribe(this.boxPopListener);
+
+        this.recorderPopListener = function (data) {
+            recorder.pop();
+        };
+        this.radio(this.popEvent).subscribe(this.recorderPopListener);
+
+        this.deckPopListener = function () {
+            self.deck.pop().disappear();
+        };
+        this.radio(this.popEvent).subscribe(this.deckPopListener);
 
         this.swipeTarget = window.swipee().init({
             dom: this.dom,
@@ -341,6 +354,10 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
         this.radio(this.baseEvent).unsubscribe(this.boxCmdListener);
         this.radio(this.baseEvent).unsubscribe(this.recorderCmdListener);
+
+        this.radio(this.popEvent).unsubscribe(this.boxPopListener);
+        this.radio(this.popEvent).unsubscribe(this.recorderPopListener);
+        this.radio(this.popEvent).unsubscribe(this.deckPopListener);
 
         this.deck.forEach(function (card) {
             card.disappear();
