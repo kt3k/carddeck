@@ -3,20 +3,14 @@
  * author: Yosiya Hinosawa ( @ktt3k )
  */
 
-window.recorder = (function () {
+window.recorder = Object.branch(function (recorderPrototype) {
     'use strict';
 
-    var exports = function () {
-        return new recorder();
-    };
+    var APP = 'card-recorder';
 
-    var recorder = function () {
+    recorderPrototype.constructor = function () {
         this.reset();
     };
-
-    exports.APP = 'card-recorder';
-
-    var recorderPrototype = recorder.prototype = exports.prototype = {constructor: exports};
 
     recorderPrototype.resetSerial = function () {
         this.serial = (new Date()).getTime();
@@ -43,11 +37,11 @@ window.recorder = (function () {
     };
 
     recorderPrototype.storeLocalStorage = function () {
-        window.localStorage[exports.APP + this.serial] = this.serialize();
+        window.localStorage[APP + this.serial] = this.serialize();
     };
 
     recorderPrototype.load = function (serial) {
-        var json = JSON.parse(window.localStorage[exports.APP + serial]);
+        var json = JSON.parse(window.localStorage[APP + serial]);
         this.serial = json.serial;
         this.list = json.list;
     };
@@ -76,6 +70,4 @@ window.recorder = (function () {
     recorderPrototype.replayStop = function () {
         window.clearInterval(this.replayTimer);
     };
-
-    return exports;
-}());
+});
