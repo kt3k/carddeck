@@ -169,6 +169,94 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
     };
 });
 
+this.Deck = Object.branch(function (deckPrototype) {
+    'use strict';
+
+    deckPrototype.init = function (args) {
+        this.radio = args.radio;
+        this.popEvent = args.popEvent;
+        this.dealEvent = args.dealEvent;
+        this.shootEvent = args.shootEvent;
+        this.screenHeight = args.screenHeight;
+        this.screenWidth = args.screenWidth;
+        this.swipeeHeight = args.swipeeHeight;
+        this.deckHeight = args.deckHeight;
+
+        var self = this;
+
+        this.dealListener = function (data) {
+            self.dealCard(data.index, data.command, data.color)
+        };
+
+        this.popListener = function () {
+            self.pop();
+        };
+
+        this.shootListener = function () {
+            self.shoot();
+        };
+
+        this.popBroadcaster = function () {
+            self.radio(self.popEvent).broadcast();
+        };
+
+        return this;
+    };
+
+    deckPrototype.appear = function () {
+        this.deck = [];
+
+        this.radio(this.popEvent).subscribe(this.popListener);
+        this.radio(this.shootEvent).subscribe(this.shootListener);
+        this.radio(this.dealEvent).subscribe(this.dealListener);
+
+        return this;
+    };
+
+    deckPrototype.disappear = function () {
+        this.deck.forEach(function (card) {
+            card.disappear();
+        });
+
+        this.deck = null;
+
+        this.radio(this.popEvent).unsubscribe(this.popListener);
+        this.radio(this.shootEvent).unsubscribe(this.shootListener);
+        this.radio(this.dealListener).unsubscribe(this.dealListener);
+
+        return this;
+    };
+
+    deckPrototype.dealCard = function (n, cmd, color) {
+        this.deck.push(window.card().init({
+            i: n,
+            color: color,
+            duration: 300,
+            eventListener: this.popBroadcaster,
+            targetDom: this.dom,
+            screenWidth: this.screenWidth,
+            screenHeight: this.screenHeight,
+            swipeeHeight: this.swipeeHeight,
+            deckHeight: this.deckHeight
+        }).appear());
+    };
+
+    deckPrototype.shoot = function () {
+        var prevDeck = this.deck;
+        this.deck = [];
+
+        window.elapsed(575)
+        .then(function () {
+            prevDeck.forEach(function (card) {
+                card.shoot();
+            });
+        });
+    };
+
+    deckPrototype.pop = function () {
+        this.deck.pop().disappear();
+    };
+});
 
 this.cardDeck = Object.branch(function (deckPrototype) {
     'use strict';
@@ -216,51 +304,32 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.opEvent = args.opEvent;
         this.baseEvent = args.baseEvent;
         this.popEvent = args.popEvent;
+        this.shootEvent = args.shootEvent;
+        this.dealEvent = args.dealEvent;
         this.radio = args.radio;
 
         this.dom = args.dom;
 
-        this.deck = [];
-
         var self = this;
 
         var monoHook = function (n, cmd) {
-
-            self.deck.push(window.card().init({
-                i: n,
-                color: self.colorMap[cmd],
-                duration: 300,
-                eventListener: pop,
-                targetDom: self.dom,
-                screenWidth: self.screenWidth,
-                screenHeight: self.screenHeight,
-                swipeeHeight: self.swipeeHeight,
-                deckHeight: self.deckHeight
-            }).appear());
+            self.radio(self.dealEvent).broadcast({
+                index: n,
+                command: cmd,
+                color: self.colorMap[cmd]
+            });
 
             self.swipeTarget.lightUp(self.colorMap[cmd]);
         };
 
         var codonHook = function (syms) {
 
-            var prevDeck = self.deck;
-            self.deck = [];
-
-            window.elapsed(575)
-            .then(function () {
-                prevDeck.forEach(function (card) {
-                    card.shoot();
-                });
-            });
+            self.radio(self.shootEvent).broadcast();
 
             window.elapsed(875)
             .then(function () {
                 self.radio(self.opEvent).broadcast({codon: syms.join('')});
             });
-        };
-
-        var pop = function () {
-            self.radio(self.popEvent).broadcast();
         };
 
         var machine = this.machine = window.ribosome = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
@@ -285,10 +354,16 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         };
         this.radio(this.popEvent).subscribe(this.recorderPopListener);
 
-        this.deckPopListener = function () {
-            self.deck.pop().disappear();
-        };
-        this.radio(this.popEvent).subscribe(this.deckPopListener);
+        this.deck = window.Deck().init({
+            popEvent: this.popEvent,
+            shootEvent: this.shootEvent,
+            dealEvent: this.dealEvent,
+            radio: this.radio,
+            screenHeight: this.screenHeight,
+            screenWidth: this.screenWidth,
+            deckHeight: this.deckHeight,
+            swipeeHeight: this.swipeeHeight
+        }).appear();
 
         this.swipeTarget = window.swipee().init({
             dom: this.dom,
@@ -359,11 +434,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.radio(this.popEvent).unsubscribe(this.recorderPopListener);
         this.radio(this.popEvent).unsubscribe(this.deckPopListener);
 
-        this.deck.forEach(function (card) {
-            card.disappear();
-        });
-
-        this.deck = [];
+        this.deck.disappear();
 
         this.swipeTarget.disappear();
 
