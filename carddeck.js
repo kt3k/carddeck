@@ -432,7 +432,6 @@ this.cardDeck = Object.branch(function (deckPrototype) {
 
         this.radio(this.popEvent).unsubscribe(this.boxPopListener);
         this.radio(this.popEvent).unsubscribe(this.recorderPopListener);
-        this.radio(this.popEvent).unsubscribe(this.deckPopListener);
 
         this.deck.disappear();
 
