@@ -17,28 +17,22 @@ window.recorder = Object.branch(function (recorderPrototype, parent, decorators)
         this.popEvent = args.popEvent;
         this.baseEvent = args.baseEvent;
 
-        var self = this;
-
-        this.popListener = function () {
-            self.pop();
-        };
-
-        this.baseListener = function (data) {
-            self.record(data);
+        this.__subscription__ = {
+            pop: this.popEvent,
+            record: this.baseEvent
         };
     }
+    .E(pubsub.InitSubscription)
     .E(decorators.Chainable);
 
     recorderPrototype.appear = function () {
-        this.radio(this.popEvent).subscribe(this.popListener);
-        this.radio(this.baseEvent).subscribe(this.baseListener);
     }
+    .E(pubsub.Subscribe)
     .E(decorators.Chainable);
 
     recorderPrototype.disappear = function () {
-        this.radio(this.popEvent).unsubscribe(this.popListener);
-        this.radio(this.baseEvent).unsubscribe(this.baseListener);
     }
+    .E(pubsub.Unsubscribe)
     .E(decorators.Chainable);
 
     recorderPrototype.resetSerial = function () {
