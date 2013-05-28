@@ -208,18 +208,6 @@ this.Deck = Object.branch(function (deckPrototype) {
 
         var self = this;
 
-        this.dealListener = function (data) {
-            self.dealCard(data)
-        };
-
-        this.popListener = function () {
-            self.pop();
-        };
-
-        this.shootListener = function () {
-            self.shoot();
-        };
-
         this.popBroadcaster = function () {
             self.radio(self.popEvent).broadcast();
         };
@@ -251,10 +239,6 @@ this.Deck = Object.branch(function (deckPrototype) {
         this.deck = null;
 
         this.Unsubscribe();
-
-        /*this.radio(this.popEvent).unsubscribe(this.popListener);
-        this.radio(this.shootEvent).unsubscribe(this.shootListener);
-        this.radio(this.dealEvent).unsubscribe(this.dealListener);*/
 
         return this;
     };
