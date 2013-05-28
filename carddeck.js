@@ -324,14 +324,15 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
         this.boxCmdListener = function (data) {
             machine.command(data.cmd);
         };
-        this.radio(this.baseEvent).subscribe(this.boxCmdListener);
-
 
         this.boxPopListener = function () {
             machine.pop();
         };
-        this.radio(this.popEvent).subscribe(this.boxPopListener);
 
+        this.__subscription__ = {
+            boxPopListener: this.popEvent,
+            boxCmdListener: this.baseEvent
+        };
 
         this.recorder = window.rec = window.recorder().init({
             radio: this.radio,
@@ -359,6 +360,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             defaultColor: this.colorMap.NONE
         });
     }
+    .E(pubsub.InitSubscription)
     .E(decorators.Chainable);
 
     deckPrototype.appear = function () {
@@ -404,20 +406,18 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
 
         window.arrowkeys(swipe.end);
     }
+    .E(pubsub.Subscribe)
     .E(decorators.Chainable);
 
     deckPrototype.disappear = function () {
         window.arrowkeys.clear();
         window.swipe4.clear();
 
-        this.radio(this.baseEvent).unsubscribe(this.boxCmdListener);
-
-        this.radio(this.popEvent).unsubscribe(this.boxPopListener);
-
         this.deck.disappear();
         this.recorder.disappear();
 
         this.swipeTarget.disappear();
     }
+    .E(pubsub.Unsubscribe)
     .E(decorators.Chainable);
 });
