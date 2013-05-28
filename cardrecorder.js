@@ -3,7 +3,7 @@
  * author: Yosiya Hinosawa ( @ktt3k )
  */
 
-window.recorder = Object.branch(function (recorderPrototype) {
+window.recorder = Object.branch(function (recorderPrototype, parent, decorators) {
     'use strict';
 
     var APP = 'card-recorder';
@@ -26,21 +26,20 @@ window.recorder = Object.branch(function (recorderPrototype) {
         this.baseListener = function (data) {
             self.record(data);
         };
-
-        return this;
-    };
+    }
+    .E(decorators.Chainable);
 
     recorderPrototype.appear = function () {
         this.radio(this.popEvent).subscribe(this.popListener);
         this.radio(this.baseEvent).subscribe(this.baseListener);
-
-        return this;
-    };
+    }
+    .E(decorators.Chainable);
 
     recorderPrototype.disappear = function () {
         this.radio(this.popEvent).unsubscribe(this.popListener);
-        this.radio(this.baseEvent).unsubscribe(this.baseListener)
-    };
+        this.radio(this.baseEvent).unsubscribe(this.baseListener);
+    }
+    .E(decorators.Chainable);
 
     recorderPrototype.resetSerial = function () {
         this.serial = (new Date()).getTime();
@@ -49,7 +48,7 @@ window.recorder = Object.branch(function (recorderPrototype) {
     recorderPrototype.reset = function () {
         this.list = [];
         this.resetSerial();
-    }
+    };
 
     recorderPrototype.record = function (data) {
         this.list.push(data.cmd);
@@ -59,7 +58,7 @@ window.recorder = Object.branch(function (recorderPrototype) {
         this.list.pop();
     };
 
-    recorderPrototype.serialize = function (symbol) {
+    recorderPrototype.serialize = function () {
         return JSON.stringify({
             serial: this.serial,
             list: this.list
