@@ -11,6 +11,54 @@ window.imgPool = new window.ImagePool()
 .createCache('img/m_.png', 15)
 .createCache('img/s_.png', 15);
 
+
+var pubsub = {};
+
+pubsub.InitSubscription = function (func) {
+    'use strict';
+
+    return function () {
+        var result = func.apply(this, arguments);
+
+        this.__listeners__ = {};
+
+        var self = this;
+
+        Object.keys(this.__subscription__).forEach(function (key) {
+            this.__listeners__[key] = function () {
+                self[key].apply(self, arguments);
+            };
+        }, this);
+
+        return result;
+    };
+};
+
+pubsub.Subscribe = function (func) {
+    'use strict';
+
+    return function () {
+        Object.keys(this.__listeners__).forEach(function (key) {
+            window.radio(this.__subscription__[key]).subscribe(this.__listeners__[key]);
+        }, this);
+
+        return func.apply(this, arguments);
+    };
+};
+
+pubsub.Unsubscribe = function (func) {
+    'use strict';
+
+    return function () {
+        Object.keys(this.__listeners__).forEach(function (key) {
+            window.radio(this.__subscription__[key]).unsubscribe(this.__listeners__[key]);
+        }, this);
+
+        return func.apply(this, arguments);
+    };
+};
+
+
 window.card = window.div.branch(function (cardPrototype, parent, decorators) {
     'use strict';
 
@@ -172,44 +220,6 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
 this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
     'use strict';
 
-    decorators.InitSubscription = function (func) {
-        return function () {
-            var result = func.apply(this, arguments);
-
-            this.__listeners__ = {};
-
-            var self = this;
-
-            Object.keys(this.__subscription__).forEach(function (key) {
-                this.__listeners__[key] = function () {
-                    self[key].apply(self, arguments);
-                };
-            }, this);
-
-            return result;
-        };
-    };
-
-    decorators.Subscribe = function (func) {
-        return function () {
-            Object.keys(this.__listeners__).forEach(function (key) {
-                window.radio(this.__subscription__[key]).subscribe(this.__listeners__[key]);
-            }, this);
-
-            return func.apply(this, arguments);
-        };
-    };
-
-    decorators.Unsubscribe = function (func) {
-        return function () {
-            Object.keys(this.__listeners__).forEach(function (key) {
-                window.radio(this.__subscription__[key]).unsubscribe(this.__listeners__[key]);
-            }, this);
-
-            return func.apply(this, arguments);
-        };
-    };
-
     deckPrototype.init = function (args) {
         this.radio = args.radio;
         this.popEvent = args.popEvent;
@@ -232,13 +242,13 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
             shoot: this.shootEvent
         };
     }
-    .E(decorators.InitSubscription)
+    .E(pubsub.InitSubscription)
     .E(decorators.Chainable);
 
     deckPrototype.appear = function () {
         this.deck = [];
     }
-    .E(decorators.Subscribe)
+    .E(pubsub.Subscribe)
     .E(decorators.Chainable);
 
     deckPrototype.disappear = function () {
@@ -248,7 +258,7 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
 
         this.deck = null;
     }
-    .E(decorators.Unsubscribe)
+    .E(pubsub.Unsubscribe)
     .E(decorators.Chainable);
 
     deckPrototype.dealCard = function (data) {
@@ -361,17 +371,17 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
 
         this.boxCmdListener = function (data) {
             machine.command(data.cmd);
-        }
+        };
         this.radio(this.baseEvent).subscribe(this.boxCmdListener);
 
 
-        this.boxPopListener = function (data) {
+        this.boxPopListener = function () {
             machine.pop();
         };
         this.radio(this.popEvent).subscribe(this.boxPopListener);
 
 
-        var recorder = this.recorder = window.rec = window.recorder().init({
+        this.recorder = window.rec = window.recorder().init({
             radio: this.radio,
             popEvent: this.popEvent,
             baseEvent: this.baseEvent
