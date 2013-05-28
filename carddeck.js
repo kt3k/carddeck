@@ -169,31 +169,53 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
     };
 });
 
-this.Deck = Object.branch(function (deckPrototype) {
+this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
     'use strict';
 
-    deckPrototype.InitSubscription = function () {
-        this.__listeners__ = {};
+    decorators.InitSubscription = function (func) {
+        return function () {
+            var result = func.apply(this, arguments);
 
-        var self = this;
+            this.__listeners__ = {};
 
-        Object.keys(this.__subscription__).forEach(function (key) {
-            this.__listeners__[key] = function () {
-                self[key].apply(self, arguments);
-            };
-        }, this);
+            var self = this;
+
+            Object.keys(this.__subscription__).forEach(function (key) {
+                this.__listeners__[key] = function () {
+                    self[key].apply(self, arguments);
+                };
+            }, this);
+
+            return result;
+        };
     };
 
-    deckPrototype.Subscribe = function () {
-        Object.keys(this.__listeners__).forEach(function (key) {
-            this.radio(this.__subscription__[key]).subscribe(this.__listeners__[key]);
-        }, this);
+    decorators.Subscribe = function (func) {
+        return function () {
+            Object.keys(this.__listeners__).forEach(function (key) {
+                this.radio(this.__subscription__[key]).subscribe(this.__listeners__[key]);
+            }, this);
+
+            return func.apply(this, arguments);
+        };
     };
 
-    deckPrototype.Unsubscribe = function () {
-        Object.keys(this.__listeners__).forEach(function (key) {
-            this.radio(this.__subscription__[key]).unsubscribe(this.__listeners__[key]);
-        }, this);
+    decorators.Unsubscribe = function (func) {
+        return function () {
+            Object.keys(this.__listeners__).forEach(function (key) {
+                this.radio(this.__subscription__[key]).unsubscribe(this.__listeners__[key]);
+            }, this);
+
+            return func.apply(this, arguments);
+        };
+    };
+
+    decorators.Chainable = function (func) {
+        return function () {
+            func.apply(this, arguments);
+
+            return this;
+        };
     };
 
     deckPrototype.init = function (args) {
@@ -217,19 +239,15 @@ this.Deck = Object.branch(function (deckPrototype) {
             dealCard: this.dealEvent,
             shoot: this.shootEvent
         };
-
-        this.InitSubscription();
-
-        return this;
-    };
+    }
+    .E(decorators.InitSubscription)
+    .E(decorators.Chainable);
 
     deckPrototype.appear = function () {
         this.deck = [];
-
-        this.Subscribe();
-
-        return this;
-    };
+    }
+    .E(decorators.Subscribe)
+    .E(decorators.Chainable);
 
     deckPrototype.disappear = function () {
         this.deck.forEach(function (card) {
@@ -237,11 +255,9 @@ this.Deck = Object.branch(function (deckPrototype) {
         });
 
         this.deck = null;
-
-        this.Unsubscribe();
-
-        return this;
-    };
+    }
+    .E(decorators.Unsubscribe)
+    .E(decorators.Chainable);
 
     deckPrototype.dealCard = function (data) {
         this.deck.push(window.card().init({
