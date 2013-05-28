@@ -11,54 +11,6 @@ window.imgPool = new window.ImagePool()
 .createCache('img/m_.png', 15)
 .createCache('img/s_.png', 15);
 
-
-var pubsub = {};
-
-pubsub.InitSubscription = function (func) {
-    'use strict';
-
-    return function () {
-        var result = func.apply(this, arguments);
-
-        this.__listeners__ = {};
-
-        var self = this;
-
-        Object.keys(this.__subscription__).forEach(function (key) {
-            this.__listeners__[key] = function () {
-                self[key].apply(self, arguments);
-            };
-        }, this);
-
-        return result;
-    };
-};
-
-pubsub.Subscribe = function (func) {
-    'use strict';
-
-    return function () {
-        Object.keys(this.__listeners__).forEach(function (key) {
-            window.radio(this.__subscription__[key]).subscribe(this.__listeners__[key]);
-        }, this);
-
-        return func.apply(this, arguments);
-    };
-};
-
-pubsub.Unsubscribe = function (func) {
-    'use strict';
-
-    return function () {
-        Object.keys(this.__listeners__).forEach(function (key) {
-            window.radio(this.__subscription__[key]).unsubscribe(this.__listeners__[key]);
-        }, this);
-
-        return func.apply(this, arguments);
-    };
-};
-
-
 window.card = window.div.branch(function (cardPrototype, parent, decorators) {
     'use strict';
 
@@ -459,10 +411,8 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
         window.swipe4.clear();
 
         this.radio(this.baseEvent).unsubscribe(this.boxCmdListener);
-        this.radio(this.baseEvent).unsubscribe(this.recorderCmdListener);
 
         this.radio(this.popEvent).unsubscribe(this.boxPopListener);
-        this.radio(this.popEvent).unsubscribe(this.recorderPopListener);
 
         this.deck.disappear();
         this.recorder.disappear();
