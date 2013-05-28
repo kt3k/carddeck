@@ -13,7 +13,6 @@ window.recorder = Object.branch(function (recorderPrototype, parent, decorators)
     };
 
     recorderPrototype.init = function (args) {
-        this.radio = args.radio;
         this.popEvent = args.popEvent;
         this.baseEvent = args.baseEvent;
 
