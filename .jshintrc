@@ -10,7 +10,6 @@
     "undef": true,
     "unused": true,
     "indent": 4,
-    "camelcase": true,
 
     "eqnull": true,
     "expr": true,
