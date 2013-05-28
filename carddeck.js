@@ -193,7 +193,7 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
     decorators.Subscribe = function (func) {
         return function () {
             Object.keys(this.__listeners__).forEach(function (key) {
-                this.radio(this.__subscription__[key]).subscribe(this.__listeners__[key]);
+                window.radio(this.__subscription__[key]).subscribe(this.__listeners__[key]);
             }, this);
 
             return func.apply(this, arguments);
@@ -203,18 +203,10 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
     decorators.Unsubscribe = function (func) {
         return function () {
             Object.keys(this.__listeners__).forEach(function (key) {
-                this.radio(this.__subscription__[key]).unsubscribe(this.__listeners__[key]);
+                window.radio(this.__subscription__[key]).unsubscribe(this.__listeners__[key]);
             }, this);
 
             return func.apply(this, arguments);
-        };
-    };
-
-    decorators.Chainable = function (func) {
-        return function () {
-            func.apply(this, arguments);
-
-            return this;
         };
     };
 
