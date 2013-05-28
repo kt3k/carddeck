@@ -172,6 +172,30 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
 this.Deck = Object.branch(function (deckPrototype) {
     'use strict';
 
+    deckPrototype.InitSubscription = function () {
+        this.__listeners__ = {};
+
+        var self = this;
+
+        Object.keys(this.__subscription__).forEach(function (key) {
+            this.__listeners__[key] = function () {
+                self[key].apply(self, arguments);
+            };
+        }, this);
+    };
+
+    deckPrototype.Subscribe = function () {
+        Object.keys(this.__listeners__).forEach(function (key) {
+            this.radio(this.__subscription__[key]).subscribe(this.__listeners__[key]);
+        }, this);
+    };
+
+    deckPrototype.Unsubscribe = function () {
+        Object.keys(this.__listeners__).forEach(function (key) {
+            this.radio(this.__subscription__[key]).unsubscribe(this.__listeners__[key]);
+        }, this);
+    };
+
     deckPrototype.init = function (args) {
         this.radio = args.radio;
         this.popEvent = args.popEvent;
@@ -200,15 +224,21 @@ this.Deck = Object.branch(function (deckPrototype) {
             self.radio(self.popEvent).broadcast();
         };
 
+        this.__subscription__ = {
+            pop: this.popEvent,
+            dealCard: this.dealEvent,
+            shoot: this.shootEvent
+        };
+
+        this.InitSubscription();
+
         return this;
     };
 
     deckPrototype.appear = function () {
         this.deck = [];
 
-        this.radio(this.popEvent).subscribe(this.popListener);
-        this.radio(this.shootEvent).subscribe(this.shootListener);
-        this.radio(this.dealEvent).subscribe(this.dealListener);
+        this.Subscribe();
 
         return this;
     };
@@ -220,9 +250,11 @@ this.Deck = Object.branch(function (deckPrototype) {
 
         this.deck = null;
 
-        this.radio(this.popEvent).unsubscribe(this.popListener);
+        this.Unsubscribe();
+
+        /*this.radio(this.popEvent).unsubscribe(this.popListener);
         this.radio(this.shootEvent).unsubscribe(this.shootListener);
-        this.radio(this.dealEvent).unsubscribe(this.dealListener);
+        this.radio(this.dealEvent).unsubscribe(this.dealListener);*/
 
         return this;
     };
