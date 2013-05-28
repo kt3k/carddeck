@@ -12,6 +12,36 @@ window.recorder = Object.branch(function (recorderPrototype) {
         this.reset();
     };
 
+    recorderPrototype.init = function (args) {
+        this.radio = args.radio;
+        this.popEvent = args.popEvent;
+        this.baseEvent = args.baseEvent;
+
+        var self = this;
+
+        this.popListener = function () {
+            self.pop();
+        };
+
+        this.baseListener = function (data) {
+            self.record(data);
+        };
+
+        return this;
+    };
+
+    recorderPrototype.appear = function () {
+        this.radio(this.popEvent).subscribe(this.popListener);
+        this.radio(this.baseEvent).subscribe(this.baseListener);
+
+        return this;
+    };
+
+    recorderPrototype.disappear = function () {
+        this.radio(this.popEvent).unsubscribe(this.popListener);
+        this.radio(this.baseEvent).unsubscribe(this.baseListener)
+    };
+
     recorderPrototype.resetSerial = function () {
         this.serial = (new Date()).getTime();
     };
@@ -21,8 +51,8 @@ window.recorder = Object.branch(function (recorderPrototype) {
         this.resetSerial();
     }
 
-    recorderPrototype.record = function (symbol) {
-        this.list.push(symbol);
+    recorderPrototype.record = function (data) {
+        this.list.push(data.cmd);
     };
 
     recorderPrototype.pop = function () {

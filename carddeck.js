@@ -222,7 +222,7 @@ this.Deck = Object.branch(function (deckPrototype) {
 
         this.radio(this.popEvent).unsubscribe(this.popListener);
         this.radio(this.shootEvent).unsubscribe(this.shootListener);
-        this.radio(this.dealListener).unsubscribe(this.dealListener);
+        this.radio(this.dealEvent).unsubscribe(this.dealListener);
 
         return this;
     };
@@ -333,26 +333,25 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         };
 
         var machine = this.machine = window.ribosome = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
+
+
         this.boxCmdListener = function (data) {
             machine.command(data.cmd);
         }
         this.radio(this.baseEvent).subscribe(this.boxCmdListener);
 
-        var recorder = this.recorder = window.rec = window.recorder();
-        this.recorderCmdListener = function (data) {
-            recorder.record(data.cmd)
-        }
-        this.radio(this.baseEvent).subscribe(this.recorderCmdListener);
 
         this.boxPopListener = function (data) {
             machine.pop();
         };
         this.radio(this.popEvent).subscribe(this.boxPopListener);
 
-        this.recorderPopListener = function (data) {
-            recorder.pop();
-        };
-        this.radio(this.popEvent).subscribe(this.recorderPopListener);
+
+        var recorder = this.recorder = window.rec = window.recorder().init({
+            radio: this.radio,
+            popEvent: this.popEvent,
+            baseEvent: this.baseEvent
+        }).appear();
 
         this.deck = window.Deck().init({
             popEvent: this.popEvent,
@@ -434,6 +433,7 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.radio(this.popEvent).unsubscribe(this.recorderPopListener);
 
         this.deck.disappear();
+        this.recorder.disappear();
 
         this.swipeTarget.disappear();
 
