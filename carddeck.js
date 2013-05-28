@@ -282,7 +282,7 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
     };
 });
 
-this.cardDeck = Object.branch(function (deckPrototype) {
+this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
     'use strict';
 
     deckPrototype.colorMap = {
@@ -396,9 +396,8 @@ this.cardDeck = Object.branch(function (deckPrototype) {
             screenHeight: this.screenHeight,
             defaultColor: this.colorMap.NONE
         });
-
-        return this;
-    };
+    }
+    .E(decorators.Chainable);
 
     deckPrototype.appear = function () {
         var self = this;
@@ -442,9 +441,8 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         window.swipe4(swipe);
 
         window.arrowkeys(swipe.end);
-
-        return this;
-    };
+    }
+    .E(decorators.Chainable);
 
     deckPrototype.disappear = function () {
         window.arrowkeys.clear();
@@ -460,8 +458,6 @@ this.cardDeck = Object.branch(function (deckPrototype) {
         this.recorder.disappear();
 
         this.swipeTarget.disappear();
-
-        return this;
-    };
-
+    }
+    .E(decorators.Chainable);
 });
