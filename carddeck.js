@@ -16,7 +16,12 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
 
     cardPrototype.init = function (args) {
         this.i = args.i;
-        this.eventListener = args.eventListener;
+
+        var self = this;
+        this.eventListener = function () {
+            self.pop();
+        };
+
         this.dur = args.duration || 0;
         this.width = 62;
         this.height = 62;
@@ -24,6 +29,7 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         this.screenHeight = args.screenHeight;
         this.swipeeHeight = args.swipeeHeight;
         this.deckHeight = args.deckHeight;
+        this.popEvent = args.popEvent;
 
         this
         .css({
@@ -43,9 +49,22 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
 
         this.dom.appendChild(window.imgPool.get('img/' + args.color.symbol + '_.png'));
 
+        this.__subscription__ = {
+            pop: [this.dom, 'click']
+        };
+
+        this.__publication__ = {
+            pop: this.popEvent
+        };
+
         this.bindListener();
     }
+    .E(pubsub.InitPublication)
     .E(decorators.Chainable);
+
+    cardPrototype.pop = function () {
+    }
+    .E(pubsub.Publish);
 
     cardPrototype.appear = function () {
         this
@@ -55,22 +74,8 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .addX((this.i - 1) * 100)
         .setY(this.screenHeight - this.swipeeHeight - this.deckHeight / 2 - this.height / 2)
         .transitionCommit();
-
-        return this;
-    };
-
-    cardPrototype.shoot = function () {
-        this.unbindListener();
-
-        this
-        .transition()
-        .duration(this.dur)
-        .setScale(0)
-        .setX(this.screenWidth / 2 - this.width / 2)
-        .setY(this.screenHeight - this.swipeeHeight - this.deckHeight - this.height / 2)
-        .remove()
-        .transitionCommitSync();
-    };
+    }
+    .E(decorators.Chainable);
 
     cardPrototype.disappear = function () {
         this.unbindListener();
@@ -84,6 +89,20 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .delay(1000 - this.dur)
         .remove()
         .transitionCommit();
+    }
+    .E(decorators.Chainable);
+
+    cardPrototype.shoot = function () {
+        this.unbindListener();
+
+        this
+        .transition()
+        .duration(this.dur)
+        .setScale(0)
+        .setX(this.screenWidth / 2 - this.width / 2)
+        .setY(this.screenHeight - this.swipeeHeight - this.deckHeight - this.height / 2)
+        .remove()
+        .transitionCommitSync();
     };
 
     cardPrototype.bindListener = function () {
@@ -235,7 +254,8 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
             screenWidth: this.screenWidth,
             screenHeight: this.screenHeight,
             swipeeHeight: this.swipeeHeight,
-            deckHeight: this.deckHeight
+            deckHeight: this.deckHeight,
+            popEvent: this.popEvent
         }).appear());
     };
 
@@ -411,9 +431,8 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             }
         };
 
-        window.swipe4(swipe);
-
         window.arrowkeys(swipe.end);
+        window.swipe4(swipe);
     }
     .E(pubsub.Subscribe)
     .E(decorators.Chainable);
