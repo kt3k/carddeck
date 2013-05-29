@@ -106,7 +106,12 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         this.screenWidth = args.screenWidth;
         this.screenHeight = args.screenHeight;
         this.defaultColor = args.defaultColor;
+
+        this.__subscription__ = {
+            dealListener: args.dealEvent
+        };
     }
+    .E(pubsub.InitSubscription)
     .E(decorators.Chainable);
 
     swipeePrototype.appear = function () {
@@ -137,6 +142,7 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
 
         this.dom.innerHTML = '<blink>&laquo; SWIPE HERE &raquo;</blink>';
     }
+    .E(pubsub.Subscribe)
     .E(decorators.Chainable);
 
     swipeePrototype.disappear = function () {
@@ -147,7 +153,9 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         .duration(1000)
         .remove()
         .transitionCommit();
-    };
+    }
+    .E(pubsub.Unsubscribe)
+    .E(decorators.Chainable);
 
     swipeePrototype.setColor = function (color) {
         this
@@ -166,6 +174,10 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         .setColor(this.defaultColor)
         .transitionCommitSync()
         .transitionUnlock();
+    };
+
+    swipeePrototype.dealListener = function (data) {
+        this.lightUp(data.color);
     };
 });
 
@@ -304,8 +316,6 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
                 command: cmd,
                 color: self.colorMap[cmd]
             });
-
-            self.swipeTarget.lightUp(self.colorMap[cmd]);
         };
 
         var codonHook = function (syms) {
@@ -335,7 +345,6 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
         };
 
         this.recorder = window.rec = window.recorder().init({
-            radio: this.radio,
             popEvent: this.popEvent,
             baseEvent: this.baseEvent
         }).appear();
@@ -344,7 +353,6 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             popEvent: this.popEvent,
             shootEvent: this.shootEvent,
             dealEvent: this.dealEvent,
-            radio: this.radio,
             screenHeight: this.screenHeight,
             screenWidth: this.screenWidth,
             deckHeight: this.deckHeight,
@@ -357,7 +365,8 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             targetHeight: this.swipeeHeight,
             screenWidth: this.screenWidth,
             screenHeight: this.screenHeight,
-            defaultColor: this.colorMap.NONE
+            defaultColor: this.colorMap.NONE,
+            dealEvent: this.dealEvent
         });
     }
     .E(pubsub.InitSubscription)
