@@ -63,8 +63,7 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
     .E(decorators.Chainable);
 
     cardPrototype.pop = function () {
-    }
-    .E(pubsub.Publish);
+    };
 
     cardPrototype.appear = function () {
         this
