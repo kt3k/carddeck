@@ -199,12 +199,6 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
         this.deckHeight = args.deckHeight;
         this.targetDom = args.dom;
 
-        var self = this;
-
-        this.popBroadcaster = function () {
-            self.radio(self.popEvent).broadcast();
-        };
-
         this.__subscription__ = {
             pop: this.popEvent,
             dealCard: this.dealEvent,
