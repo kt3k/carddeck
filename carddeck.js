@@ -17,11 +17,6 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
     cardPrototype.init = function (args) {
         this.i = args.i;
 
-        var self = this;
-        this.eventListener = function () {
-            self.pop();
-        };
-
         this.dur = args.duration || 0;
         this.width = 62;
         this.height = 62;
@@ -30,6 +25,7 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         this.swipeeHeight = args.swipeeHeight;
         this.deckHeight = args.deckHeight;
         this.popEvent = args.popEvent;
+        this.targetDom = args.dom;
 
         this
         .css({
@@ -44,7 +40,7 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .setScale(0)
         .setX(this.screenWidth / 2 - this.width / 2)
         .setY(this.screenHeight - this.swipeeHeight - this.height / 2)
-        .prependTo(document.body)
+        .prependTo(this.targetDom)
         .commit();
 
         this.dom.appendChild(window.imgPool.get('img/' + args.color.symbol + '_.png'));
@@ -56,9 +52,8 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         this.__publication__ = {
             pop: this.popEvent
         };
-
-        this.bindListener();
     }
+    .E(pubsub.InitSubscription)
     .E(pubsub.InitPublication)
     .E(decorators.Chainable);
 
@@ -74,11 +69,10 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .setY(this.screenHeight - this.swipeeHeight - this.deckHeight / 2 - this.height / 2)
         .transitionCommit();
     }
+    .E(pubsub.Subscribe)
     .E(decorators.Chainable);
 
     cardPrototype.disappear = function () {
-        this.unbindListener();
-
         this
         .setScale(0)
         .addRot(Math.random() * 720 - 360)
@@ -89,11 +83,10 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .remove()
         .transitionCommit();
     }
+    .E(pubsub.Unsubscribe)
     .E(decorators.Chainable);
 
     cardPrototype.shoot = function () {
-        this.unbindListener();
-
         this
         .transition()
         .duration(this.dur)
@@ -102,15 +95,8 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .setY(this.screenHeight - this.swipeeHeight - this.deckHeight - this.height / 2)
         .remove()
         .transitionCommitSync();
-    };
-
-    cardPrototype.bindListener = function () {
-        this.dom.addEventListener('click', this.eventListener, false);
-    };
-
-    cardPrototype.unbindListener = function () {
-        this.dom.removeEventListener('click', this.eventListener, false);
-    };
+    }
+    .E(pubsub.Unsubscribe);
 });
 
 
@@ -211,6 +197,7 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
         this.screenWidth = args.screenWidth;
         this.swipeeHeight = args.swipeeHeight;
         this.deckHeight = args.deckHeight;
+        this.targetDom = args.dom;
 
         var self = this;
 
@@ -254,7 +241,8 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
             screenHeight: this.screenHeight,
             swipeeHeight: this.swipeeHeight,
             deckHeight: this.deckHeight,
-            popEvent: this.popEvent
+            popEvent: this.popEvent,
+            dom: this.targetDom
         }).appear());
     };
 
@@ -375,7 +363,8 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             screenHeight: this.screenHeight,
             screenWidth: this.screenWidth,
             deckHeight: this.deckHeight,
-            swipeeHeight: this.swipeeHeight
+            swipeeHeight: this.swipeeHeight,
+            dom: this.dom
         }).appear();
 
         this.swipeTarget = window.swipee().init({
