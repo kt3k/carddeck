@@ -99,6 +99,77 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
     .E(pubsub.Unsubscribe);
 });
 
+this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
+    'use strict';
+
+    deckPrototype.init = function (args) {
+        this.radio = args.radio;
+        this.popEvent = args.popEvent;
+        this.dealEvent = args.dealEvent;
+        this.shootEvent = args.shootEvent;
+        this.screenHeight = args.screenHeight;
+        this.screenWidth = args.screenWidth;
+        this.swipeeHeight = args.swipeeHeight;
+        this.deckHeight = args.deckHeight;
+        this.targetDom = args.dom;
+
+        this.__subscription__ = {
+            pop: this.popEvent,
+            dealCard: this.dealEvent,
+            shoot: this.shootEvent
+        };
+    }
+    .E(pubsub.InitSubscription)
+    .E(decorators.Chainable);
+
+    deckPrototype.appear = function () {
+        this.deck = [];
+    }
+    .E(pubsub.Subscribe)
+    .E(decorators.Chainable);
+
+    deckPrototype.disappear = function () {
+        this.deck.forEach(function (card) {
+            card.disappear();
+        });
+
+        this.deck = null;
+    }
+    .E(pubsub.Unsubscribe)
+    .E(decorators.Chainable);
+
+    deckPrototype.dealCard = function (data) {
+        this.deck.push(window.card().init({
+            i: data.index,
+            color: data.color,
+            duration: 300,
+            eventListener: this.popBroadcaster,
+            targetDom: this.dom,
+            screenWidth: this.screenWidth,
+            screenHeight: this.screenHeight,
+            swipeeHeight: this.swipeeHeight,
+            deckHeight: this.deckHeight,
+            popEvent: this.popEvent,
+            dom: this.targetDom
+        }).appear());
+    };
+
+    deckPrototype.shoot = function () {
+        var prevDeck = this.deck;
+        this.deck = [];
+
+        window.elapsed(575)
+        .then(function () {
+            prevDeck.forEach(function (card) {
+                card.shoot();
+            });
+        });
+    };
+
+    deckPrototype.pop = function () {
+        this.deck.pop().disappear();
+    };
+});
 
 window.swipee = window.div.branch(function (swipeePrototype, parent, decorators) {
     'use strict';
@@ -182,78 +253,6 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
 
     swipeePrototype.dealListener = function (data) {
         this.lightUp(data.color);
-    };
-});
-
-this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
-    'use strict';
-
-    deckPrototype.init = function (args) {
-        this.radio = args.radio;
-        this.popEvent = args.popEvent;
-        this.dealEvent = args.dealEvent;
-        this.shootEvent = args.shootEvent;
-        this.screenHeight = args.screenHeight;
-        this.screenWidth = args.screenWidth;
-        this.swipeeHeight = args.swipeeHeight;
-        this.deckHeight = args.deckHeight;
-        this.targetDom = args.dom;
-
-        this.__subscription__ = {
-            pop: this.popEvent,
-            dealCard: this.dealEvent,
-            shoot: this.shootEvent
-        };
-    }
-    .E(pubsub.InitSubscription)
-    .E(decorators.Chainable);
-
-    deckPrototype.appear = function () {
-        this.deck = [];
-    }
-    .E(pubsub.Subscribe)
-    .E(decorators.Chainable);
-
-    deckPrototype.disappear = function () {
-        this.deck.forEach(function (card) {
-            card.disappear();
-        });
-
-        this.deck = null;
-    }
-    .E(pubsub.Unsubscribe)
-    .E(decorators.Chainable);
-
-    deckPrototype.dealCard = function (data) {
-        this.deck.push(window.card().init({
-            i: data.index,
-            color: data.color,
-            duration: 300,
-            eventListener: this.popBroadcaster,
-            targetDom: this.dom,
-            screenWidth: this.screenWidth,
-            screenHeight: this.screenHeight,
-            swipeeHeight: this.swipeeHeight,
-            deckHeight: this.deckHeight,
-            popEvent: this.popEvent,
-            dom: this.targetDom
-        }).appear());
-    };
-
-    deckPrototype.shoot = function () {
-        var prevDeck = this.deck;
-        this.deck = [];
-
-        window.elapsed(575)
-        .then(function () {
-            prevDeck.forEach(function (card) {
-                card.shoot();
-            });
-        });
-    };
-
-    deckPrototype.pop = function () {
-        this.deck.pop().disappear();
     };
 });
 
@@ -348,7 +347,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
         this.recorder = window.rec = window.recorder().init({
             popEvent: this.popEvent,
             baseEvent: this.baseEvent
-        }).appear();
+        });
 
         this.deck = window.Deck().init({
             popEvent: this.popEvent,
@@ -359,7 +358,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             deckHeight: this.deckHeight,
             swipeeHeight: this.swipeeHeight,
             dom: this.dom
-        }).appear();
+        });
 
         this.swipeTarget = window.swipee().init({
             dom: this.dom,
@@ -377,6 +376,8 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
     deckPrototype.appear = function () {
         var self = this;
 
+        this.recorder.appear();
+        this.deck.appear();
         this.swipeTarget.appear();
 
         var swipe = {
