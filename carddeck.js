@@ -315,7 +315,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
         var self = this;
 
         var monoHook = function (n, cmd) {
-            self.radio(self.dealEvent).broadcast({
+            window.radio(self.dealEvent).broadcast({
                 index: n,
                 command: cmd,
                 color: self.colorMap[cmd]
@@ -324,11 +324,11 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
 
         var codonHook = function (syms) {
 
-            self.radio(self.shootEvent).broadcast();
+            window.radio(self.shootEvent).broadcast();
 
             window.elapsed(875)
             .then(function () {
-                self.radio(self.opEvent).broadcast({codon: syms.join('')});
+                window.radio(self.opEvent).broadcast({codon: syms.join('')});
             });
         };
 
@@ -389,16 +389,16 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
 
             end: {
                 up: function () {
-                    self.radio(self.baseEvent).broadcast({cmd: 'S'});
+                    window.radio(self.baseEvent).broadcast({cmd: 'S'});
                 },
                 down: function () {
-                    self.radio(self.baseEvent).broadcast({cmd: 'N'});
+                    window.radio(self.baseEvent).broadcast({cmd: 'N'});
                 },
                 left: function () {
-                    self.radio(self.baseEvent).broadcast({cmd: 'O'});
+                    window.radio(self.baseEvent).broadcast({cmd: 'O'});
                 },
                 right: function () {
-                    self.radio(self.baseEvent).broadcast({cmd: 'W'});
+                    window.radio(self.baseEvent).broadcast({cmd: 'W'});
                 }
             },
 
