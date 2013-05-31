@@ -43,7 +43,7 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .prependTo(this.targetDom)
         .commit();
 
-        this.dom.appendChild(window.imgPool.get('img/' + args.color.symbol + '_.png'));
+        this.dom.appendChild(window.imgPool.get(args.color.imgSrc));
 
         this.__subscription__ = {
             pop: [this.dom, 'click']
@@ -264,25 +264,29 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             hue: Math.floor(Math.random() * 360),
             sat: 80,
             lum: 50,
-            symbol: 'x'
+            symbol: 'x',
+            imgSrc: 'img/x_.png'
         },
         N: {
             hue: Math.floor(Math.random() * 360),
             sat: 40,
             lum: 50,
-            symbol: 'm'
+            symbol: 'm',
+            imgSrc: 'img/m_.png'
         },
         O: {
             hue: Math.floor(Math.random() * 360),
             sat: 80,
             lum: 50,
-            symbol: 'l'
+            symbol: 'l',
+            imgSrc: 'img/l_.png'
         },
         W: {
             hue: Math.floor(Math.random() * 360),
             sat: 80,
             lum: 50,
-            symbol: 's'
+            symbol: 's',
+            imgSrc: 'img/s_.png'
         },
         NONE: {
             hue: 0,
@@ -376,8 +380,8 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
     deckPrototype.appear = function () {
         var self = this;
 
-        this.recorder.appear();
         this.deck.appear();
+        this.recorder.appear();
         this.swipeTarget.appear();
 
         var swipe = {
@@ -421,13 +425,12 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
     .E(decorators.Chainable);
 
     deckPrototype.disappear = function () {
-        window.arrowkeys.clear();
-        window.swipe4.clear();
-
         this.deck.disappear();
         this.recorder.disappear();
-
         this.swipeTarget.disappear();
+
+        window.arrowkeys.clear();
+        window.swipe4.clear();
     }
     .E(pubsub.Unsubscribe)
     .E(decorators.Chainable);
