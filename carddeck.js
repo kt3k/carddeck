@@ -6,10 +6,10 @@
  */
 
 window.imgPool = new window.ImagePool()
-.createCache('img/x_.png', 15)
-.createCache('img/l_.png', 15)
-.createCache('img/m_.png', 15)
-.createCache('img/s_.png', 15);
+.createCache('img/x_.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
+.createCache('img/l_.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
+.createCache('img/m_.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
+.createCache('img/s_.png', 15, null, {position: 'absolute', top: '0px', left: '0px'});
 
 window.card = window.div.branch(function (cardPrototype, parent, decorators) {
     'use strict';
@@ -31,8 +31,7 @@ window.card = window.div.branch(function (cardPrototype, parent, decorators) {
         .css({
             position: 'absolute',
             width: this.width + 'px',
-            height: this.height + 'px',
-            overflow: 'hidden'
+            height: this.height + 'px'
         })
         .setHue(args.color.hue)
         .setSat(args.color.sat)
@@ -198,7 +197,6 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
             width: this.targetWidth + 'px',
             height: this.targetHeight + 'px',
             lineHeight: this.targetHeight + 'px',
-            textAlign: 'center',
             fontFamily: 'menlo, monospace',
             fontWeight: 'bold'
         })
@@ -215,7 +213,7 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         .transitionCommitSync()
         .transitionUnlock();
 
-        this.dom.innerHTML = '<blink>&laquo; SWIPE HERE &raquo;</blink>';
+        this.dom.innerHTML = '&laquo; SWIPE HERE &raquo;';
     }
     .E(pubsub.Subscribe)
     .E(decorators.Chainable);
