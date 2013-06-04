@@ -6,10 +6,10 @@
  */
 
 window.imgPool = new window.ImagePool()
-.createCache('img/x_.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
-.createCache('img/l_.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
-.createCache('img/m_.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
-.createCache('img/s_.png', 15, null, {position: 'absolute', top: '0px', left: '0px'});
+.createCache('img/s62.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
+.createCache('img/n62.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
+.createCache('img/o62.png', 15, null, {position: 'absolute', top: '0px', left: '0px'})
+.createCache('img/w62.png', 15, null, {position: 'absolute', top: '0px', left: '0px'});
 
 window.card = window.div.branch(function (cardPrototype, parent, decorators) {
     'use strict';
@@ -262,29 +262,25 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             hue: Math.floor(Math.random() * 360),
             sat: 80,
             lum: 50,
-            symbol: 'x',
-            imgSrc: 'img/x_.png'
+            imgSrc: 'img/s62.png'
         },
         N: {
             hue: Math.floor(Math.random() * 360),
             sat: 40,
             lum: 50,
-            symbol: 'm',
-            imgSrc: 'img/m_.png'
+            imgSrc: 'img/n62.png'
         },
         O: {
             hue: Math.floor(Math.random() * 360),
             sat: 80,
             lum: 50,
-            symbol: 'l',
-            imgSrc: 'img/l_.png'
+            imgSrc: 'img/o62.png'
         },
         W: {
             hue: Math.floor(Math.random() * 360),
             sat: 80,
             lum: 50,
-            symbol: 's',
-            imgSrc: 'img/s_.png'
+            imgSrc: 'img/w62.png'
         },
         NONE: {
             hue: 0,
