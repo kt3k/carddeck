@@ -189,6 +189,7 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
     .E(decorators.Chainable);
 
     swipeePrototype.appear = function () {
+        console.log(JSON.stringify(this.dom.style.transitionProperty));
         this
         .css({
             position: 'absolute',
@@ -213,7 +214,10 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         .transitionCommitSync()
         .transitionUnlock();
 
-        this.dom.innerHTML = '&laquo; SWIPE HERE &raquo;';
+        var img = new Image();
+        img.src = 'img/swipe.png';
+
+        this.dom.appendChild(img);
     }
     .E(pubsub.Subscribe)
     .E(decorators.Chainable);
@@ -398,16 +402,20 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
 
             progress: {
                 up: function () {
-                    self.swipeTarget.setColor(self.colorMap.S).commit();
+                    window.radio(self.progressEvent).broadcast({cmd: 'S', color: self.colorMap.S});
+                    //self.swipeTarget.setColor(self.colorMap.S).commit();
                 },
                 down: function () {
-                    self.swipeTarget.setColor(self.colorMap.N).commit();
+                    window.radio(self.progressEvent).broadcast({cmd: 'N', color: self.colorMap.N});
+                    //self.swipeTarget.setColor(self.colorMap.N).commit();
                 },
                 left: function () {
-                    self.swipeTarget.setColor(self.colorMap.O).commit();
+                    window.radio(self.progressEvent).broadcast({cmd: 'O', color: self.colorMap.O});
+                    //self.swipeTarget.setColor(self.colorMap.O).commit();
                 },
                 right: function () {
-                    self.swipeTarget.setColor(self.colorMap.W).commit();
+                    window.radio(self.progressEvent).broadcast({cmd: 'W', color: self.colorMap.W});
+                    //self.swipeTarget.setColor(self.colorMap.W).commit();
                 }
             }
         };
