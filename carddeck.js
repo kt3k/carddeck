@@ -102,7 +102,6 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
     'use strict';
 
     deckPrototype.init = function (args) {
-        this.radio = args.radio;
         this.popEvent = args.popEvent;
         this.dealEvent = args.dealEvent;
         this.shootEvent = args.shootEvent;
@@ -182,14 +181,14 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
         this.defaultColor = args.defaultColor;
 
         this.__subscription__ = {
-            dealListener: args.dealEvent
+            dealListener: args.dealEvent,
+            progressListener: args.progressEvent
         };
     }
     .E(pubsub.InitSubscription)
     .E(decorators.Chainable);
 
     swipeePrototype.appear = function () {
-        console.log(JSON.stringify(this.dom.style.transitionProperty));
         this
         .css({
             position: 'absolute',
@@ -256,6 +255,10 @@ window.swipee = window.div.branch(function (swipeePrototype, parent, decorators)
     swipeePrototype.dealListener = function (data) {
         this.lightUp(data.color);
     };
+
+    swipeePrototype.progressListener = function (data) {
+        this.setColor(data.color).commit();
+    };
 });
 
 this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
@@ -306,44 +309,24 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
         this.popEvent = args.popEvent;
         this.shootEvent = args.shootEvent;
         this.dealEvent = args.dealEvent;
-        this.radio = args.radio;
+        this.progressEvent = args.progressEvent;
+        this.monoEvent = args.monoEvent;
+        this.codonEvent = args.codonEvent;
 
         this.dom = args.dom;
 
-        var self = this;
-
-        var monoHook = function (n, cmd) {
-            window.radio(self.dealEvent).broadcast({
-                index: n,
-                command: cmd,
-                color: self.colorMap[cmd]
-            });
-        };
-
-        var codonHook = function (syms) {
-
-            window.radio(self.shootEvent).broadcast();
-
-            window.elapsed(875)
-            .then(function () {
-                window.radio(self.opEvent).broadcast({codon: syms.join('')});
-            });
-        };
-
-        var machine = this.machine = window.ribosome = window.codonBox(['S', 'N', 'O', 'W'], 3, monoHook, codonHook);
-
-
-        this.boxCmdListener = function (data) {
-            machine.command(data.cmd);
-        };
-
-        this.boxPopListener = function () {
-            machine.pop();
-        };
+        var machine = this.ribosome = window.ribosome = window.codonBox().init({
+            bases: ['S', 'N', 'O', 'W'],
+            commandLength: 3,
+            monoEvent: this.monoEvent,
+            codonEvent: this.codonEvent,
+            baseEvent: this.baseEvent,
+            popEvent: this.popEvent
+        });
 
         this.__subscription__ = {
-            boxPopListener: this.popEvent,
-            boxCmdListener: this.baseEvent
+            codonEventListener: this.codonEvent,
+            monoEventListener: this.monoEvent
         };
 
         this.recorder = window.rec = window.recorder().init({
@@ -369,7 +352,8 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             screenWidth: this.screenWidth,
             screenHeight: this.screenHeight,
             defaultColor: this.colorMap.NONE,
-            dealEvent: this.dealEvent
+            dealEvent: this.dealEvent,
+            progressEvent: this.progressEvent
         });
     }
     .E(pubsub.InitSubscription)
@@ -381,6 +365,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
         this.deck.appear();
         this.recorder.appear();
         this.swipeTarget.appear();
+        this.ribosome.appear();
 
         var swipe = {
             target: this.swipeTarget.dom,
@@ -403,19 +388,15 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             progress: {
                 up: function () {
                     window.radio(self.progressEvent).broadcast({cmd: 'S', color: self.colorMap.S});
-                    //self.swipeTarget.setColor(self.colorMap.S).commit();
                 },
                 down: function () {
                     window.radio(self.progressEvent).broadcast({cmd: 'N', color: self.colorMap.N});
-                    //self.swipeTarget.setColor(self.colorMap.N).commit();
                 },
                 left: function () {
                     window.radio(self.progressEvent).broadcast({cmd: 'O', color: self.colorMap.O});
-                    //self.swipeTarget.setColor(self.colorMap.O).commit();
                 },
                 right: function () {
                     window.radio(self.progressEvent).broadcast({cmd: 'W', color: self.colorMap.W});
-                    //self.swipeTarget.setColor(self.colorMap.W).commit();
                 }
             }
         };
@@ -430,10 +411,30 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
         this.deck.disappear();
         this.recorder.disappear();
         this.swipeTarget.disappear();
+        this.ribosome.disappear();
 
         window.arrowkeys.clear();
         window.swipe4.clear();
     }
     .E(pubsub.Unsubscribe)
     .E(decorators.Chainable);
+
+    deckPrototype.monoEventListener = function (data) {
+        window.radio(this.dealEvent).broadcast({
+            index: data.index,
+            command: data.command,
+            color: this.colorMap[data.command]
+        });
+    };
+
+    deckPrototype.codonEventListener = function (data) {
+        window.radio(this.shootEvent).broadcast();
+
+        var self = this;
+
+        window.elapsed(875)
+        .then(function () {
+            window.radio(self.opEvent).broadcast({codon: data.syms.join('')});
+        });
+    };
 });
