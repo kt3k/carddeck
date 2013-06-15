@@ -315,7 +315,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
 
         this.dom = args.dom;
 
-        var machine = this.ribosome = window.ribosome = window.codonBox().init({
+        var machine = this.ribosome = window.ribosome = window.CodonBox().init({
             bases: ['S', 'N', 'O', 'W'],
             commandLength: 3,
             monoEvent: this.monoEvent,
