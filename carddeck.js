@@ -104,7 +104,7 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
     deckPrototype.init = function (args) {
         this.popEvent = args.popEvent;
         this.dealEvent = args.dealEvent;
-        this.shootEvent = args.shootEvent;
+        this.codonEvent = args.codonEvent;
         this.screenHeight = args.screenHeight;
         this.screenWidth = args.screenWidth;
         this.swipeeHeight = args.swipeeHeight;
@@ -114,7 +114,7 @@ this.Deck = Object.branch(function (deckPrototype, parent, decorators) {
         this.__subscription__ = {
             pop: this.popEvent,
             dealCard: this.dealEvent,
-            shoot: this.shootEvent
+            shoot: this.codonEvent
         };
     }
     .E(pubsub.InitSubscription)
@@ -329,6 +329,11 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             monoEventListener: this.monoEvent
         };
 
+        this.__publication__ = {
+            opEventPublisher: this.opEvent,
+            dealEventPublisher: this.dealEvent
+        };
+
         this.recorder = window.rec = window.recorder().init({
             popEvent: this.popEvent,
             baseEvent: this.baseEvent
@@ -336,7 +341,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
 
         this.deck = window.Deck().init({
             popEvent: this.popEvent,
-            shootEvent: this.shootEvent,
+            codonEvent: this.codonEvent,
             dealEvent: this.dealEvent,
             screenHeight: this.screenHeight,
             screenWidth: this.screenWidth,
@@ -356,7 +361,7 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
             progressEvent: this.progressEvent
         });
     }
-    .E(pubsub.InitSubscription)
+    .E(pubsub.Init)
     .E(decorators.Chainable);
 
     deckPrototype.appear = function () {
@@ -420,21 +425,27 @@ this.cardDeck = Object.branch(function (deckPrototype, parent, decorators) {
     .E(decorators.Chainable);
 
     deckPrototype.monoEventListener = function (data) {
-        window.radio(this.dealEvent).broadcast({
-            index: data.index,
-            command: data.command,
-            color: this.colorMap[data.command]
-        });
+        this.dealEventPublisher(data);
     };
 
     deckPrototype.codonEventListener = function (data) {
-        window.radio(this.shootEvent).broadcast();
-
         var self = this;
 
         window.elapsed(875)
         .then(function () {
-            window.radio(self.opEvent).broadcast({codon: data.syms.join('')});
+            self.opEventPublisher(data.syms.join(''));
         });
+    };
+
+    deckPrototype.dealEventPublisher = function (data) {
+        return {
+            index: data.index,
+            command: data.command,
+            color: this.colorMap[data.command]
+        }
+    };
+
+    deckPrototype.opEventPublisher = function (codon) {
+        return {codon: codon};
     };
 });
